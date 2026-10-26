@@ -135,7 +135,7 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
   <div class="eyebrow">Kensington · 邮件防护 · QA</div>
   <h1>邮件防护 QA 手册</h1>
   <p class="lede">用户在网页邮箱里打开一封邮件时，Phi 浏览器内置的 Kensington 扩展会判断这封邮件的安全等级，并在主题旁边显示一个标志。这份手册讲清楚它读了什么、按什么顺序检测、每一步用什么规则和模型、页面上的标志在什么情况下怎么变，以及每一项应该怎么测、怎样算通过。</p>
-  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>a536efe90</code>）逐条核对，以代码为准。</p>
+  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>8f95a2cb5</code>）逐条核对，以代码为准。</p>
   <div class="facts">
     <div class="fact"><b>3</b><span>支持的网页邮箱：Gmail、Outlook、Yahoo Mail</span></div>
     <div class="fact"><b>3 层</b><span>技术检查 → Jev 快速检查 → 终审</span></div>
@@ -574,6 +574,7 @@ stateDiagram-v2
   <h3>外观</h3>
   <ul>
     <li><b>深浅色：</b>跟随邮箱页面自己的背景色（例如 Gmail 深色主题），而不是系统设置。</li>
+    <li><b>动画：</b>短而轻（约 0.13–0.24 秒）。所有按钮的悬停和按下有过渡；技术发现展开/收起时说明文字平滑展开；徽章和横幅在一封邮件上第一次出现时淡入，状态更新时不重复播放；面板从徽章处淡入、关闭时淡出；进入设置/关于页时新页面从右侧滑入，返回时从左侧滑入，面板高度平滑变化；关闭横幅时横幅收起；「展开/收起」总结时高度平滑变化；设置开关切换时滑块滑动。系统开启「减少动态效果」时以上动画全部不播放。切换到另一封邮件时面板直接消失、不播放动画。</li>
     <li><b>不受邮箱页面样式影响：</b>徽章、横幅、面板的文字颜色和字体由组件自己决定。Outlook 的页面样式曾让面板里靠继承取色的文字（如技术发现标题）在深色模式下变成黑色大字，已修复。</li>
     <li><b>位置：</b>Gmail 中和 Gmail 的标签对齐；Outlook 和 Yahoo 中按主题文字自动垂直居中（中日韩主题对准汉字中心，其他对准大写字母中心）。主题太长时徽章可能换到下一行。</li>
   </ul>
@@ -704,7 +705,7 @@ stateDiagram-v2
   </table></div>
 </section>
 
-<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>a536efe90</code>（2026-10-26）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
+<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>8f95a2cb5</code>（2026-10-26）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
 </main>
 </div>
 
@@ -785,6 +786,11 @@ stateDiagram-v2
     ["信任", "在设置里移除信任条目后恢复正常检查", "名单为空时显示「还没有信任的发件人」"],
     ["开关", "设置「标出可疑链接」关闭后正文链接红框消失，再打开恢复", "面板里技术发现照常列出；切换后当前邮件立刻更新"],
     ["开关", "设置「低风险邮件也显示徽章」关闭后，低风险邮件不显示徽章，检查过程中也不闪「检查中」", "需留意/可疑/高风险、未检查、灰色盾牌照常显示；在低风险邮件面板里关掉时面板不跳位"],
+    ["动画", "点徽章打开面板、点 × / Esc / 点面板外关闭面板", "打开时从徽章处淡入，关闭时淡出，不闪烁、不跳位"],
+    ["动画", "面板里进入设置、进入关于页、点返回", "前进时新页面从右滑入、返回时从左滑入，面板高度平滑变化"],
+    ["动画", "展开/收起技术发现；「展开/收起」总结；切换设置开关", "高度平滑变化、箭头旋转；开关滑块滑动"],
+    ["动画", "徽章首次出现、等级更新（检查中 → 可能… → 最终等级）；关闭横幅", "首次出现淡入，之后的更新不重复播放；横幅关闭时收起，下方内容平滑上移"],
+    ["动画", "系统设置里开启「减少动态效果」后重复上面的操作", "没有任何动画，功能照常"],
     ["开关", "在 Phi 设置 ▸ AI 关闭邮件防护：已打开的邮箱页面上徽章、横幅、面板立刻消失；再打开后立刻恢复", "不需要刷新页面；关闭期间打开邮件不发起任何检查"],
     ["关于", "设置页最下面「关于邮件防护与隐私 ›」打开关于页，左上返回回到设置页", "关闭检查后，从灰色盾牌进入设置也能打开；深浅色都正常"],
     ["关于", "关于页「打开 Phi 设置」", "打开 Phi 设置的 AI 页面（和 Sidecar 设置图标打开的同一页）"],
