@@ -141,7 +141,7 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
   <div class="eyebrow">Kensington · 邮件防护 · QA</div>
   <h1>邮件防护 QA 手册</h1>
   <p class="lede">用户在网页邮箱里打开一封邮件时，Phi 浏览器内置的 Kensington 扩展会判断这封邮件的安全等级，并在主题旁边显示一个标志。这份手册讲清楚它读了什么、按什么顺序检测、每一步用什么规则和模型、页面上的标志在什么情况下怎么变，以及每一项应该怎么测、怎样算通过。</p>
-  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>8f95a2cb5</code>）逐条核对，以代码为准。</p>
+  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>201fe538e</code>）逐条核对，以代码为准。</p>
   <div class="facts">
     <div class="fact"><b>3</b><span>支持的网页邮箱：Gmail、Outlook、Yahoo Mail</span></div>
     <div class="fact"><b>3 层</b><span>技术检查 → Jev 快速检查 → 终审</span></div>
@@ -711,7 +711,7 @@ stateDiagram-v2
   </table></div>
 </section>
 
-<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>8f95a2cb5</code>（2026-10-26）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
+<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>201fe538e</code>（2026-10-26）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
 </main>
 </div>
 
@@ -797,6 +797,9 @@ stateDiagram-v2
     ["动画", "展开/收起技术发现；「展开/收起」总结；切换设置开关", "高度平滑变化、箭头旋转；开关滑块滑动"],
     ["动画", "徽章首次出现、等级更新（检查中 → 可能… → 最终等级）；关闭横幅", "首次出现淡入，之后的更新不重复播放；横幅关闭时收起，下方内容平滑上移"],
     ["动画", "系统设置里开启「减少动态效果」后重复上面的操作", "没有任何动画，功能照常"],
+    ["动画", "邮件有横幅时，在设置里切换「标出可疑链接」「低风险邮件也显示徽章」", "横幅不闪、不重新播放入场；不会重新检查这封邮件"],
+    ["动画", "三个设置开关分别来回切换", "三个开关的滑动手感一致，不会中途跳到终点"],
+    ["动画", "展开、收起技术发现，看它下方的内容（免责说明等）", "下方内容跟着平滑移动，展开结束或收起开始时没有额外的跳动"],
     ["开关", "在 Phi 设置 ▸ AI 关闭邮件防护：已打开的邮箱页面上徽章、横幅、面板立刻消失；再打开后立刻恢复", "不需要刷新页面；关闭期间打开邮件不发起任何检查"],
     ["关于", "设置页最下面「关于邮件防护与隐私 ›」打开关于页，左上返回回到设置页", "关闭检查后，从灰色盾牌进入设置也能打开；深浅色都正常"],
     ["关于", "关于页「打开 Phi 设置」", "打开 Phi 设置的 AI 页面（和 Sidecar 设置图标打开的同一页）"],
