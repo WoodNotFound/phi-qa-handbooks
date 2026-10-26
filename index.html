@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Phi QA 手册</title>
+<style>
+  :root { --paper: #f6f7f4; --sheet: #ffffff; --ink: #1d2320; --soft: #4f5a54; --rule: #dfe3dd; --accent: #2f6b4f; }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #151917; --sheet: #1d2220; --ink: #e6ebe7; --soft: #a6b0aa; --rule: #323a36; --accent: #8fc9a8; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+    font: 16px/1.6 "Noto Sans SC", system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 6px; }
+  .lede { color: var(--soft); margin: 0 0 32px; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  li { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; }
+  a { color: var(--accent); font-weight: 600; font-size: 18px; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p.line { margin: 4px 0 0; color: var(--soft); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Phi QA 手册</h1>
+  <p class="lede">各功能的测试手册：功能怎么工作、该测什么、预期是什么。</p>
+  <ul>
+    <li><a href="mail-guard/">邮件防护 QA 手册</a><p class="line">Kensington 邮件防护：Gmail、Outlook、Yahoo Mail 上一封邮件的安全等级是怎么判断的，以及测试指南与清单。</p></li>
+  </ul>
+</main>
+</body>
+</html>
