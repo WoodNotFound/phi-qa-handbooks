@@ -141,7 +141,7 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
   <div class="eyebrow">Kensington · 邮件防护 · QA</div>
   <h1>邮件防护 QA 手册</h1>
   <p class="lede">用户在网页邮箱里打开一封邮件时，Phi 浏览器内置的 Kensington 扩展会判断这封邮件的安全等级，并在主题旁边显示一个标志。这份手册讲清楚它读了什么、按什么顺序检测、每一步用什么规则和模型、页面上的标志在什么情况下怎么变，以及每一项应该怎么测、怎样算通过。</p>
-  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>3c684d0c2</code>）逐条核对，以代码为准。</p>
+  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>a536efe90</code>）逐条核对，以代码为准。</p>
   <div class="facts">
     <div class="fact"><b>3</b><span>支持的网页邮箱：Gmail、Outlook、Yahoo Mail</span></div>
     <div class="fact"><b>3 层</b><span>技术检查 → Jev 快速检查 → 终审</span></div>
@@ -507,6 +507,7 @@ flowchart LR
     <tr><td><span class="pill p-high">高风险</span></td><td>最终结果高风险；或技术检查有严重发现（立刻显示）</td></tr>
     <tr><td><span class="pill p-unread">未检查</span></td><td>发件人/主题/正文读不全；或 Phi AI 不可用且技术检查是低风险。<b>从不用低风险代替</b></td></tr>
     <tr><td><span class="pill p-off">◯</span>（灰色盾牌）</td><td>用户关闭了检查；点它打开设置</td></tr>
+    <tr><td>（什么都没有）</td><td>在 Phi 设置中关闭了邮件防护：不显示徽章、横幅、面板，也不发起任何检查</td></tr>
   </table></div>
   <p class="tag">用户关闭「低风险邮件也显示徽章」后：低风险邮件和「检查中」阶段不显示徽章；需留意及以上、「未检查」、灰色盾牌照常显示。</p>
   <div class="diagram"><pre class="mermaid">
@@ -596,6 +597,11 @@ stateDiagram-v2
       <p>面板齿轮 → 「邮件防护设置」→「检查已打开的邮件」开关。关闭后主题旁保留一个灰色盾牌，点它打开设置重新开启。关闭期间不读取、不发送任何内容。</p>
       <h4>标出可疑链接 / 低风险邮件也显示徽章</h4><p>同在设置页，默认都开。改动立刻作用于当前邮件。在低风险邮件自己的面板里关掉「低风险邮件也显示徽章」，徽章消失但面板留在原位，可以马上再打开；关上面板后，要从一封需留意及以上的邮件进入设置才能改回。</p>
       <h4>管理信任名单</h4><p>设置页「信任的发件人」列出所有条目，每条可「移除」。名单为空时显示「还没有信任的发件人」。</p></div>
+    <div class="card"><h4>关于邮件防护与隐私</h4>
+      <p>设置页最下面一行「关于邮件防护与隐私 ›」，点开是面板里的第三页（左上返回到设置页；关闭检查后点灰色盾牌进入设置也能到这里）。依次说明：怎么检查（纯本地的特征匹配检测，再请 Phi AI 判断）、会发送哪些内容（每封 / 进一步检查时 / 不会发送）、发送给谁（Phi Cloud 及上游 AI 模型服务商，可在 Private AI 中改用自己的模型服务）、Phi 不出售数据、不用于广告、不用于训练（绿色提示框）、保存在本机的内容、如何完全关闭。底部「打开 Phi 设置」按钮和「隐私政策」链接。</p></div>
+    <div class="card"><h4>在 Phi 设置中完全关闭</h4>
+      <p>Phi 设置 ▸ AI 里的邮件防护开关（浏览器传给扩展的 <code>enableEmailProtection</code>）。关闭后邮箱页面上什么都不显示，连灰色盾牌也没有，也不发起检查；重新打开后立刻恢复，<b>已经打开的邮箱页面不用刷新</b>。旧版浏览器没有这个开关，按开处理。关掉「在 Phi 浏览器中启用 AI 功能」总开关时，浏览器不加载 Phi 自带扩展，邮件防护同样完全消失。</p>
+      <p>关于页里的「打开 Phi 设置」打开的是 Phi 设置的 AI 页面，和 Sidecar 设置图标打开的是同一页。</p></div>
     <div class="card"><h4>多语言</h4>
       <p>界面跟随<b>浏览器界面语言</b>（不是邮箱的语言）：简体中文、繁体中文、日语、韩语、德语、西班牙语、法语、荷兰语、英语。其他语言显示英文。终审的理由和总结用同一语言生成。</p>
       <p class="tag">当前译文为临时版，发布前会走正式翻译流程替换。</p></div>
@@ -611,10 +617,15 @@ stateDiagram-v2
   <p>共四项，都在面板齿轮打开的设置页里。</p>
   <div class="tablebox"><table>
     <tr><th>项</th><th>默认</th><th>界面入口</th><th>作用</th></tr>
-    <tr><td><code>enabled</code></td><td>开</td><td>设置 → 检查已打开的邮件</td><td>总开关</td></tr>
+    <tr><td><code>enabled</code></td><td>开</td><td>设置 → 检查已打开的邮件</td><td>检查开关；关闭后保留灰色盾牌</td></tr>
     <tr><td><code>highlightEnabled</code></td><td>开</td><td>设置 → 标出可疑链接</td><td>正文里被技术发现指向的链接加红框</td></tr>
     <tr><td><code>showBadgeWhenLow</code></td><td>开</td><td>设置 → 低风险邮件也显示徽章</td><td>关闭后低风险邮件和「检查中」阶段不显示徽章；需留意及以上、「未检查」、灰色盾牌照常显示</td></tr>
     <tr><td><code>trustedSenders</code></td><td>空</td><td>面板「信任此发件人」/ 设置里移除</td><td>最多 50 条，总长度有上限</td></tr>
+  </table></div>
+  <h3>浏览器设置（Phi 设置 ▸ AI）</h3>
+  <div class="tablebox"><table>
+    <tr><th>项</th><th>默认</th><th>作用</th></tr>
+    <tr><td><code>enableEmailProtection</code></td><td>开（浏览器不传时也算开）</td><td>关闭后邮件防护完全不显示、不检查；变化立即作用于已打开的邮箱页面</td></tr>
   </table></div>
   <h3>服务端（phi-agent 环境变量）</h3>
   <div class="tablebox"><table>
@@ -699,7 +710,7 @@ stateDiagram-v2
   </table></div>
 </section>
 
-<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>3c684d0c2</code>（2026-10-26）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
+<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>a536efe90</code>（2026-10-26）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
 </main>
 </div>
 
@@ -780,6 +791,11 @@ stateDiagram-v2
     ["信任", "在设置里移除信任条目后恢复正常检查", "名单为空时显示「还没有信任的发件人」"],
     ["开关", "设置「标出可疑链接」关闭后正文链接红框消失，再打开恢复", "面板里技术发现照常列出；切换后当前邮件立刻更新"],
     ["开关", "设置「低风险邮件也显示徽章」关闭后，低风险邮件不显示徽章，检查过程中也不闪「检查中」", "需留意/可疑/高风险、未检查、灰色盾牌照常显示；在低风险邮件面板里关掉时面板不跳位"],
+    ["开关", "在 Phi 设置 ▸ AI 关闭邮件防护：已打开的邮箱页面上徽章、横幅、面板立刻消失；再打开后立刻恢复", "不需要刷新页面；关闭期间打开邮件不发起任何检查"],
+    ["关于", "设置页最下面「关于邮件防护与隐私 ›」打开关于页，左上返回回到设置页", "关闭检查后，从灰色盾牌进入设置也能打开；深浅色都正常"],
+    ["关于", "关于页「打开 Phi 设置」", "打开 Phi 设置的 AI 页面（和 Sidecar 设置图标打开的同一页）"],
+    ["关于", "关于页底部「隐私政策」", "在新标签页打开 https://phibrowser.com/privacy/"],
+    ["关于", "切换浏览器界面语言后关于页文字随之变化", "各语言都有，「检查已打开的邮件」的名称与设置页一致"],
     ["开关", "关闭检查后只剩灰色盾牌，点它打开设置；重新开启后恢复检查", "设置说明写「关闭后，主题旁会保留一个灰色盾牌」；关闭期间不发送任何请求"],
     ["类型", "以曝光私密影像或资料相威胁、要求付款的勒索邮件", "可疑或高风险，标题为「疑似敲诈勒索」（比特币图标）"],
     ["语言", "切换浏览器界面语言（简繁中日韩德西法荷英）后界面文字随之变化", "终审总结也用该语言；没有任何地方出现「已确认」这类绝对说法"],
