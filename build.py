@@ -28,6 +28,11 @@ HANDBOOKS = [
         "邮件防护 QA 手册",
         "Kensington 邮件防护：Gmail、Outlook、Yahoo Mail 上一封邮件的安全等级是怎么判断的，以及测试指南与清单。",
     ),
+    (
+        "mail-guard-landing",
+        "落地页守卫 QA 手册",
+        "邮件防护的下一步：用户点开（或复制）可疑邮件里的链接后，确认页、提示条、遮罩、补救卡片何时出现，以及测试指南与清单。",
+    ),
 ]
 
 MERMAID = """<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>

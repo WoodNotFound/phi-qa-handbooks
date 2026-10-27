@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>落地页守卫 QA 手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;800&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a field manual — sticky contents rail on the left, one reading column, wide tables scroll in place. */
+:root {
+  --paper: #f6f7f4; --sheet: #ffffff; --ink: #1d2320; --ink-soft: #4f5a54; --ink-faint: #7d8781;
+  --rule: #dfe3dd; --wash: #eef1ec; --accent: #1f5f8b; --accent-wash: #e3eef6;
+  --low-bg: #eaf3de; --low-fg: #27500a; --low: #3b6d11;
+  --caution-bg: #faeeda; --caution-fg: #633806; --caution: #ba7517;
+  --suspicious: #d85a30; --high: #a32d2d; --on-solid: #ffffff; --unread: #888780;
+  --code-bg: #f0f2ee;
+  --f-display: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --f-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141816; --sheet: #1b201d; --ink: #e6ebe7; --ink-soft: #b3bdb7; --ink-faint: #87918b;
+  --rule: #2f3632; --wash: #222825; --accent: #7fb6dc; --accent-wash: #1c2b36;
+  --low-bg: #27500a; --low-fg: #c0dd97; --low: #97c459;
+  --caution-bg: #633806; --caution-fg: #fac775; --caution: #ef9f27;
+  --suspicious: #c4512a; --high: #c23b3a; --unread: #b4b2a9; --code-bg: #232a26; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #141816; --sheet: #1b201d; --ink: #e6ebe7; --ink-soft: #b3bdb7; --ink-faint: #87918b;
+  --rule: #2f3632; --wash: #222825; --accent: #7fb6dc; --accent-wash: #1c2b36;
+  --low-bg: #27500a; --low-fg: #c0dd97; --low: #97c459;
+  --caution-bg: #633806; --caution-fg: #fac775; --caution: #ef9f27;
+  --suspicious: #c4512a; --high: #c23b3a; --unread: #b4b2a9; --code-bg: #232a26; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.75 var(--f-body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; }
+@media (max-width: 900px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 20px; } nav.toc { position: static !important; max-height: none !important; } }
+nav.toc { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); align-self: start; max-height: calc(100vh - 32px); overflow: auto;
+  font-size: 13px; border-left: 2px solid var(--rule); padding-left: 14px; }
+nav.toc .k { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px; }
+nav.toc a { display: block; color: var(--ink-soft); text-decoration: none; padding: 3px 0; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); }
+main { min-width: 0; }
+header.hero { padding: 8px 0 28px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(30px, 4.4vw, 44px); line-height: 1.2; margin: 8px 0 12px; text-wrap: balance; }
+h2 { font-family: var(--f-display); font-weight: 800; font-size: 26px; line-height: 1.3; margin: 0 0 6px; text-wrap: balance; }
+h3 { font-size: 17px; font-weight: 700; margin: 26px 0 8px; }
+h4 { font-size: 15px; font-weight: 700; margin: 18px 0 6px; }
+p { margin: 8px 0; max-width: 72ch; }
+.lede { font-size: 17px; color: var(--ink-soft); max-width: 70ch; }
+section.s { padding: 40px 0 8px; border-bottom: 1px solid var(--rule); scroll-margin-top: 16px; }
+section.s > .num { font-family: var(--f-mono); font-size: 12px; color: var(--ink-faint); letter-spacing: .06em; }
+.kicker { color: var(--ink-soft); margin-top: 2px; }
+code, .mono { font-family: var(--f-mono); font-size: .86em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--accent); }
+ul, ol { padding-left: 1.3em; max-width: 72ch; }
+li { margin: 3px 0; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 22px; }
+.fact { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; }
+.fact b { display: block; font-family: var(--f-display); font-size: 28px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.fact span { color: var(--ink-soft); font-size: 13px; }
+.tablebox { overflow-x: auto; margin: 12px 0 18px; border: 1px solid var(--rule); border-radius: 10px; background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+th { background: var(--wash); font-weight: 700; font-size: 13px; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+td.nowrap { white-space: nowrap; }
+.note { background: var(--accent-wash); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; max-width: 80ch; }
+.warn { background: var(--caution-bg); color: var(--caution-fg); border-left: 3px solid var(--caution); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; max-width: 80ch; }
+.warn code { background: transparent; }
+.diagram { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; overflow-x: auto; margin: 14px 0; }
+.diagram pre.mermaid { margin: 0; background: transparent; text-align: center; }
+.cap { font-size: 13px; color: var(--ink-faint); margin-top: 6px; }
+/* Replica of the extension's badge: 18px pill, 12px type, the same level colours. */
+.pill { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 9px 0 7px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap; border: 1px solid transparent; vertical-align: middle; }
+.pill svg { width: 12px; height: 12px; flex: none; }
+.p-low { background: var(--low-bg); color: var(--low-fg); }
+.p-caution { background: var(--caution-bg); color: var(--caution-fg); }
+.p-suspicious { background: var(--suspicious); color: var(--on-solid); }
+.p-high { background: var(--high); color: var(--on-solid); }
+.p-unread { background: transparent; color: var(--ink-soft); border: 1px dashed var(--unread); }
+.p-off { background: transparent; color: var(--ink-soft); border: 1px solid var(--rule); padding: 0 6px; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+.sev { display: inline-block; font-family: var(--f-mono); font-size: 11px; padding: 0 6px; border-radius: 4px; margin: 1px 2px 1px 0; white-space: nowrap; }
+.sev-critical { background: var(--high); color: var(--on-solid); }
+.sev-high { background: var(--suspicious); color: var(--on-solid); }
+.sev-medium { background: var(--caution-bg); color: var(--caution-fg); }
+.sev-low, .sev-info { background: var(--wash); color: var(--ink-soft); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 14px 0; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.card h4 { margin-top: 0; }
+.timeline { display: grid; gap: 8px; margin: 10px 0 18px; }
+.tl { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 12px; align-items: start; }
+.tl .t { font-family: var(--f-mono); font-size: 12px; color: var(--ink-faint); padding-top: 2px; text-align: right; font-variant-numeric: tabular-nums; }
+.scenario { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 16px; margin: 12px 0; }
+.scenario h4 { margin: 0 0 4px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0; }
+.filters input[type="search"] { flex: 1 1 220px; min-width: 0; padding: 7px 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--sheet); color: var(--ink); font: inherit; }
+.chipbtn { border: 1px solid var(--rule); background: var(--sheet); color: var(--ink-soft); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.chipbtn[aria-pressed="true"] { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+.chipbtn:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.check { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; padding: 7px 0; border-bottom: 1px dashed var(--rule); }
+.check input { margin-top: 6px; width: 16px; height: 16px; accent-color: var(--accent); }
+.check label { cursor: pointer; }
+.check .exp { display: block; color: var(--ink-soft); font-size: 13.5px; }
+.progress { font-family: var(--f-mono); font-size: 12px; color: var(--ink-faint); }
+.tag { font-family: var(--f-mono); font-size: 11px; color: var(--ink-faint); }
+footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc" aria-label="目录">
+  <div class="k">目录</div>
+  <a href="#overview">0 · 一页看懂</a>
+  <a href="#record">1 · 哪些邮件的链接会被记下</a>
+  <a href="#taint">2 · 怎么认出「从这封邮件来的页面」</a>
+  <a href="#tiers">3 · 四档提示</a>
+  <a href="#fields">4 · 什么算「开始交出秘密」</a>
+  <a href="#check">5 · Phi AI 的落地页检查</a>
+  <a href="#quiet">6 · 不会提示的情况</a>
+  <a href="#privacy">7 · 什么会离开浏览器</a>
+  <a href="#switch">8 · 开关与数据保存</a>
+  <a href="#limits">9 · 已知限制</a>
+  <a href="#testing">10 · 测试指南与清单</a>
+</nav>
+<main>
+<header class="hero">
+  <div class="eyebrow">Kensington · 邮件防护 · 落地页守卫 · QA</div>
+  <h1>落地页守卫 QA 手册</h1>
+  <p class="lede">邮件防护已经提示了「这封邮件很可疑」，用户还是点开了里面的链接（或者复制链接自己打开）。落地页守卫会跟着用户到那封邮件引向的页面，在用户<b>开始交出密码、卡号、验证码或运行下载的程序之前</b>拦一下。这份手册讲它什么时候生效、页面上会出现什么、按什么规则判断，以及每一项怎么测、怎样算通过。</p>
+  <p>依据 phi-ai <code>feature/mail-guard-landing-guard</code> @ <code>ac0dad395</code>（2026-10-28，已 rebase 到 staging <code>a0601d777</code>）逐条核对，以代码为准。</p>
+  <div class="facts">
+    <div class="fact"><b>4</b><span>档提示：确认页、提示条、遮罩、补救卡片</span></div>
+    <div class="fact"><b>7 天</b><span>可疑邮件的链接在本机记住多久</span></div>
+    <div class="fact"><b>30 分钟</b><span>标签页没有新导航就不再跟踪</span></div>
+    <div class="fact"><b>3 秒</b><span>遮罩上「我确定」要等多久才能点</span></div>
+    <div class="fact"><b>0</b><span>输入框里填的内容被读取或发送的次数</span></div>
+  </div>
+</header>
+
+<section class="s" id="overview">
+  <div class="num">0</div>
+  <h2>一页看懂</h2>
+  <div class="diagram"><pre class="mermaid">
+flowchart TD
+  A["用户打开一封邮件"] --> B{"邮件防护判断"}
+  B -- "低风险" --> N["不记链接，什么都不做"]
+  B -- "需留意及以上，开始终审" --> R["记下邮件里的链接（暂定）"]
+  R --> V{"终审结论"}
+  V -- "正常（无静态保底）" --> W["撤回记录"]
+  V -- "钓鱼且把握 ≥ 0.7" --> H["高危记录"]
+  V -- "可疑 / 把握不足" --> C["确认记录"]
+  H --> G["① 打开前先出确认页"]
+  C --> S["② 落地页顶部提示条"]
+  G -- "仍然打开" --> S
+  S --> F{"点进密码 / 卡号 / 验证码框，
+或开始下载程序"}
+  F --> O["③ 遮罩：挡在第一下按键之前"]
+  O -- "离开" --> L["关闭标签页，回到邮件"]
+  O -- "我确定（3 秒后可点）" --> T{"填了内容并提交？"}
+  T -- "是" --> HC["④ 下一页出现补救卡片"]
+  </pre></div>
+  <p>整件事分两部分：<b>邮件页</b>负责「记下危险邮件的链接」，<b>扩展后台</b>负责「认出从这些链接来的标签页」并把守卫脚本放进去；守卫脚本在页面里画提示条和遮罩，并请 phi-agent 判断这个页面和那封邮件是不是一回事。</p>
+</section>
+
+<section class="s" id="record">
+  <div class="num">1</div>
+  <h2>哪些邮件的链接会被记下</h2>
+  <p>只有邮件防护已经起疑的邮件才会记。记录保存在本机（扩展存储，最多 500 条、7 天），不会单独上传。</p>
+  <div class="tablebox"><table>
+    <tr><th>时机</th><th>记录状态</th><th>效果</th></tr>
+    <tr><td>邮件到「需留意」及以上、开始终审</td><td>暂定</td><td>落地页有提示条和遮罩，不出确认页</td></tr>
+    <tr><td>终审：钓鱼且把握 ≥ 0.7，或静态检查保底为高风险</td><td>高危</td><td>额外在打开前出确认页（第 ① 档）</td></tr>
+    <tr><td>终审：可疑，或钓鱼但把握 &lt; 0.7；或静态检查保底为可疑</td><td>确认</td><td>提示条、遮罩</td></tr>
+    <tr><td>终审：正常，且静态检查保底低于可疑</td><td>撤回</td><td>记录删除，已在跟踪的标签页解除</td></tr>
+    <tr><td>终审失败或超时</td><td>暂定（24 小时后过期）</td><td>同暂定</td></tr>
+    <tr><td>Jev 不可用、但静态检查保底为可疑 / 高风险</td><td>确认 / 高危</td><td>直接记录，不等终审</td></tr>
+  </table></div>
+  <p>终审结果由扩展后台直接落到记录上：用户在终审回来之前已经切到别的邮件，结论照样生效。</p>
+  <h3>记哪些链接</h3>
+  <ul>
+    <li>邮件里所有链接的<b>真实去向</b>：只拆 Gmail 的 <code>google.com/url</code>、Outlook SafeLinks 和已登记的点击追踪器这几种「转发点击」的包装；其他网址上的跳转参数（如 <code>?return=https://www.paypal.com/</code>、<code>redirect_uri=…</code>）属于那个网址自己，不拆。</li>
+    <li>按<b>注册域名</b>记（<code>login.evil.top/a</code> → <code>evil.top</code>）；多人共用的主机按<b>主机 + 路径</b>记：短链接、免费托管/对象存储、SharePoint 租户、Google 文档/表单、Microsoft Forms、OneDrive 等。</li>
+    <li>品牌表里品牌<b>自己的普通域名不记</b>（钓鱼邮件常附真品牌链接装样子）；但品牌名下的共用主机照记（<code>sites.google.com</code>、<code>docs.google.com/forms/…</code>、<code>goo.gl/…</code>）。</li>
+    <li>静态检查标为高 / 严重的链接单独记一份「保底目的地」：这些页面 Phi AI 说无关也照样出遮罩。</li>
+    <li>从邮件正文里<b>复制出来的网址</b>也加进这封邮件的记录。</li>
+  </ul>
+</section>
+
+<section class="s" id="taint">
+  <div class="num">2</div>
+  <h2>怎么认出「从这封邮件来的页面」</h2>
+  <p>扩展后台看每个标签页的每一跳顶层请求（包括重定向的中间跳），和记录比对。命中就给这个标签页打上「从可疑邮件来」的标记（下称<b>跟踪</b>），不管用户是怎么来的。</p>
+  <div class="tablebox"><table>
+    <tr><th>情况</th><th>结果</th></tr>
+    <tr><td>点击、中键 / 新标签页打开、复制粘贴到地址栏、从别的应用打开</td><td>开始跟踪</td></tr>
+    <tr><td>经短链接或 302 跳转到达</td><td>第一跳命中就开始跟踪</td></tr>
+    <tr><td>跟踪中的页面自己跳转、提交表单、被重定向</td><td>继续跟踪，记下经过的域名</td></tr>
+    <tr><td>跟踪中的页面打开新标签页</td><td>新标签页一起跟踪</td></tr>
+    <tr><td>用户在地址栏自己输入、点书签、搜索关键字，去往记录之外的网站</td><td>解除</td></tr>
+    <tr><td>关闭标签页；30 分钟没有新导航；记录被撤回</td><td>解除</td></tr>
+    <tr><td>先打开了链接、邮件之后才被判可疑（10 分钟内）</td><td>补上跟踪，已打开的页面也出提示条</td></tr>
+    <tr><td>agent 驱动的标签页（隐藏窗口里的，或 phi-agent 正在驱动的）</td><td>从不跟踪；问不到 phi-agent 时按用户自己的标签页处理</td></tr>
+  </table></div>
+  <p>跟踪状态存在浏览器会话存储里，扩展后台休眠再醒来不会丢；浏览器重启后清空，但 7 天内再访问记录里的链接会重新开始跟踪。</p>
+</section>
+
+<section class="s" id="tiers">
+  <div class="num">3</div>
+  <h2>四档提示</h2>
+  <h3>① 确认页（仅高危记录）</h3>
+  <p>请求还没发到对方网站之前就被换成扩展自己的确认页，点击、粘贴、重定向都一样。页面上：大字「这个链接会打开」+ 真实域名、邮件标题、Phi AI 的总结；主按钮「返回」，不显眼的「仍然打开」。「仍然打开」只对这个标签页、这个目的地放行，扩展后台休眠重启后仍有效。</p>
+  <h3>② 提示条</h3>
+  <p>被跟踪的每个页面顶部一条细横条：「从一封 Phi 高度怀疑的邮件打开。真实网站：<code>evil.top</code>」。「为什么？」展开邮件标题和 Phi AI 对这个页面的理由；「隐藏」只在当前页收起。不挡操作。</p>
+  <h3>③ 遮罩</h3>
+  <p>用户点进敏感输入框（第 4 节）的那一刻，或在已经获得焦点的敏感输入框里按第一下键，页面变暗，弹出遮罩，按键不会到达页面。标题按要交出的东西写：先别输入密码 / 银行卡信息 / 验证码 / 证件号码 / 先别打开这个文件。内容：</p>
+  <ul>
+    <li>大字的真实域名；</li>
+    <li>「你是从一封 Phi 高度怀疑的邮件来到这里的：“邮件标题”」；</li>
+    <li>「它要你输入密码。」（按种类）；首次访问时「你以前从没访问过这个网站。」；</li>
+    <li>Phi AI 的判断：先显示「Phi AI 正在检查这个页面…」，回来后原地换成理由；检查失败显示「Phi AI 没能检查这个页面。」</li>
+  </ul>
+  <p>按钮：「离开这个页面」（从邮件打开的标签页直接关闭并回到邮件，否则转到新标签页）；「我确定这就是我要访问的网站」3 秒后才能点，只对这个域名、这次跟踪生效，换到别的域名会重新拦。</p>
+  <p>下载：跟踪中的页面开始下载程序、脚本、磁盘镜像或压缩包时，下载先暂停并弹同样的遮罩；「离开」取消下载，「我确定」继续下载。</p>
+  <h3>④ 补救卡片</h3>
+  <p>点了「我确定」、在敏感输入框里输入了内容，随后提交或页面跳走，下一个页面右上角出现卡片：「你可能刚把密码交给了诈骗网站」+ 按种类给的步骤（改密码、其他网站同密码也改、打银行卡背面电话冻卡、不要把验证码给任何人、删除下载的文件等）。只有当 Phi AI 认出的冒充对象在品牌表里时，才给「前往 官网」按钮；否则提示用自己的书签或官方 App。卡片只出现一次。</p>
+</section>
+
+<section class="s" id="fields">
+  <div class="num">4</div>
+  <h2>什么算「开始交出秘密」</h2>
+  <p>只看页面结构，不看任何语言的文字，所以任何语言的页面判断方式一样。</p>
+  <div class="tablebox"><table>
+    <tr><th>种类</th><th>认定条件</th></tr>
+    <tr><td>密码</td><td><code>type=password</code>，或 <code>autocomplete</code> 含 <code>current-password</code> / <code>new-password</code></td></tr>
+    <tr><td>银行卡</td><td><code>autocomplete</code> 含 <code>cc-number</code>、<code>cc-csc</code>、<code>cc-exp*</code></td></tr>
+    <tr><td>验证码</td><td><code>autocomplete=one-time-code</code>；或表单里只有一个 4–8 位数字框；或一排 4–8 个单格数字框</td></tr>
+    <tr><td>下载</td><td>exe msi bat cmd scr ps1 vbs js jar apk dmg pkg app iso img zip rar 7z lnk hta wsf vhd vhdx msix appx cab sh command tar gz tgz xz</td></tr>
+    <tr><td>不算</td><td>隐藏的输入框、按钮、复选框、普通文本框（姓名、搜索、邮箱）</td></tr>
+  </table></div>
+  <p>iframe 里的输入框也算：子框架只上报，遮罩由顶层页面画，并把焦点拉到遮罩按钮上。页面在不跳转的情况下换出新表单（先邮箱后密码）时，旧的 Phi AI 判断不再算数，按新表单重新判断。</p>
+</section>
+
+<section class="s" id="check">
+  <div class="num">5</div>
+  <h2>Phi AI 的落地页检查</h2>
+  <p>phi-agent 新接口 <code>POST /api/v1/mail/landing-check</code>（Langfuse 记作 <code>phi-agent.mail-landing</code>，模型默认与终审相同，可用 <code>PHI_MAIL_LANDING_MODEL</code> 改）。页面安静 1 秒后问一次，最多等 5 秒；表单换了样子再问；同一页面同一表单只问一次。</p>
+  <div class="tablebox"><table>
+    <tr><th>发送</th><th>返回</th></tr>
+    <tr><td>邮件标题、威胁类型、终审总结与类别、被点的目的地；页面网址（去掉 ? 和 # 之后）、经过的域名（最多 10 个）、标题、可见文字（≤ 4000 字）、输入框的种类和标签；以前是否访问过；界面语言</td><td>结论 dangerous / suspicious / unrelated + 把握；页面冒充谁；最多 3 句理由（界面语言）；页面要你填什么</td></tr>
+  </table></div>
+  <p>结论 <b>unrelated 且把握 ≥ 0.7</b>、并且这个目的地没有静态检查保底时，不出遮罩（提示条仍在）。超时 25 秒；失败时遮罩照常出现，只是没有理由。</p>
+</section>
+
+<section class="s" id="quiet">
+  <div class="num">6</div>
+  <h2>不会提示的情况</h2>
+  <ul>
+    <li>低风险邮件、终审判为正常的邮件里的链接。</li>
+    <li>品牌表里品牌自己的普通域名（提示条可能因链路经过而出现，但不出遮罩）。</li>
+    <li>Phi AI 判为与诈骗无关（≥ 0.7）且无保底的页面：只有提示条。</li>
+    <li>用户自己去往记录之外的网站之后。</li>
+    <li>agent 驱动的标签页。</li>
+    <li>邮件防护关闭（面板开关或 Phi 设置）：记录、跟踪、确认页规则全部清空。</li>
+  </ul>
+</section>
+
+<section class="s" id="privacy">
+  <div class="num">7</div>
+  <h2>什么会离开浏览器</h2>
+  <ul>
+    <li>新增的只有第 5 节的落地页检查，且只针对被跟踪的页面。</li>
+    <li>从不发送：输入框里填的内容（只看长度是否为 0）、Cookie、网址的查询串和片段、未被跟踪页面的任何内容。正文、标题和输入框标签里的邮箱地址只保留 <code>@域名</code>。</li>
+    <li>邮件防护「关于」页新增两条说明：打开可疑邮件链接时会发送什么；可疑邮件的链接在本机保存 7 天。</li>
+  </ul>
+</section>
+
+<section class="s" id="switch">
+  <div class="num">8</div>
+  <h2>开关与数据保存</h2>
+  <div class="tablebox"><table>
+    <tr><th>数据</th><th>位置</th><th>保存多久</th></tr>
+    <tr><td>可疑邮件的链接记录</td><td>扩展本地存储 <code>phi.mailGuard.landing.records.v1</code></td><td>7 天（终审失败的 24 小时），最多 500 条</td></tr>
+    <tr><td>标签页跟踪状态、近 10 分钟访问记录</td><td>浏览器会话存储</td><td>浏览器关闭即清空</td></tr>
+    <tr><td>「仍然打开」的放行</td><td>浏览器会话存储</td><td>标签页关闭或浏览器关闭</td></tr>
+  </table></div>
+  <p>没有新开关：跟随邮件防护面板的「检查已打开的邮件」和 Phi 设置里的邮件防护。任一关闭立即清空上面全部数据。</p>
+</section>
+
+<section class="s" id="limits">
+  <div class="num">9</div>
+  <h2>已知限制</h2>
+  <ul>
+    <li>最后一步不在落地页上的诈骗（电话、礼品卡、正规网银转账、买币）不在范围内。</li>
+    <li>真品牌身份提供方上的 OAuth 授权钓鱼不拦。</li>
+    <li>Shadow DOM 里的输入框认不出；没有 <code>autocomplete</code> 标记的卡号框、证件号框只能靠 Phi AI 的判断。</li>
+    <li>在 Google 这类共用主机上点「我确定」，对整个注册域名生效。</li>
+    <li>在 Phi 之外读的邮件（手机、桌面客户端）无法跟踪。</li>
+  </ul>
+</section>
+
+<section class="s" id="testing">
+  <div class="num">10</div>
+  <h2>测试指南与清单</h2>
+  <h3>环境准备</h3>
+  <ol>
+    <li>Phi Canary（带本分支的 Kensington），已登录 Phi 账号；phi-agent 为本分支（带 <code>/api/v1/mail/landing-check</code>）。</li>
+    <li>Gmail 里一封会被判为高风险的钓鱼邮件，一封只会判为需留意的邮件，一封正常邮件。</li>
+    <li>测试用钓鱼站：真实钓鱼站常有 Cloudflare 人机验证，测试脚本无法通过，所以用本机仿钓鱼站（<code>*.localhost</code> 域名，浏览器自动解析到本机，不改 hosts），页面只用虚构品牌。</li>
+  </ol>
+  <h3>让邮件指向测试站</h3>
+  <p>不需要另发邮件：在 Gmail 页面打开那封真实的钓鱼邮件后，用开发者工具（或 CDP 脚本）把邮件正文里链接的 <code>href</code> 和显示文字换成测试站地址。只改页面上显示的这一份，邮箱里的邮件不变。邮件防护会把这当作「邮件后来补出的新内容」重新检查，邮件本身的话术和发件人仍是真实的，快速检查和终审照常调用真实模型。</p>
+  <h3>测试站需要的页面</h3>
+  <div class="tablebox"><table>
+    <tr><th>页面</th><th>用于</th></tr>
+    <tr><td>密码登录页（另有一版密码框自动获得焦点）</td><td>LG-40、41、47–50、70–73</td></tr>
+    <tr><td>先邮箱、后密码的两步表单（不跳转）</td><td>LG-45</td></tr>
+    <tr><td>银行卡表单；放在另一个域名 iframe 里的银行卡表单</td><td>LG-42、44</td></tr>
+    <tr><td>验证码：6 个单格 / 单个 6 位数字框</td><td>LG-43</td></tr>
+    <tr><td>下载 .exe / .lnk / .zip / .pdf，及不带 Referer 的下载</td><td>LG-60–63</td></tr>
+    <tr><td>短链接式 302 跳转、新标签页打开的链接、站内跳转</td><td>LG-14、16、31</td></tr>
+    <tr><td>与诈骗无关的普通页面</td><td>LG-51</td></tr>
+  </table></div>
+  <h3>测试清单</h3>
+  <p class="progress" id="progress"></p>
+  <div id="checklist"></div>
+</section>
+
+<footer>依据 phi-ai <code>feature/mail-guard-landing-guard</code> @ <code>ac0dad395</code>（2026-10-28）。代码位置：扩展 <code>ai-extension/kensington/src/background/landing/</code>、<code>ai-extension/kensington/src/mail-guard/landing/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>（<code>landing-route.ts</code>），说明 <code>docs/kensington-mail-guard.md</code>「Pages a risky email leads to」一节。</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  var CHECKS = [
+  ["记录", "LG-01", "打开一封终审判为钓鱼（把握 ≥ 0.7）的邮件，等徽章变成高风险，再点它的链接", "先出现确认页（不是直接打开网站）"],
+  ["记录", "LG-02", "打开一封终审只判为可疑（最终显示需留意）的邮件，点它的链接", "不出确认页，直接打开；打开的页面顶部有提示条"],
+  ["记录", "LG-03", "打开一封低风险的正常邮件，点它的链接", "确认页、提示条、遮罩都不出现"],
+  ["记录", "LG-04", "打开一封起初需留意、终审判为正常（legitimate）的邮件，点它的链接", "无任何提示（记录已撤回）"],
+  ["记录", "LG-05", "在高风险邮件里点它附带的真品牌正规链接（如 paypal.com 的帮助页）", "不出确认页，也没有提示条"],
+  ["记录", "LG-06", "邮件里的钓鱼链接带着真品牌地址作参数（如 …/signin?return=https://www.paypal.com/）", "照样被记下：点开后出确认页或提示条"],
+  ["进入方式", "LG-10", "在 Gmail 里直接点击高风险邮件的链接（会先经过 google.com/url 跳转）", "出确认页；google.com 本身不受影响"],
+  ["进入方式", "LG-11", "对链接用中键或右键「在新标签页中打开」", "新标签页里出确认页"],
+  ["进入方式", "LG-12", "选中正文里写成文字的网址，复制，粘贴到新标签页地址栏回车", "出确认页"],
+  ["进入方式", "LG-13", "右键链接「复制链接地址」，粘贴到新标签页地址栏回车", "出确认页"],
+  ["进入方式", "LG-14", "可疑邮件的链接先经过一次跳转（短链接或 302）再到落地页", "落地页顶部有提示条"],
+  ["进入方式", "LG-15", "趁终审还在转圈就点开链接，等终审出结果", "已打开的页面随后补上提示条（10 分钟内打开的都算）"],
+  ["进入方式", "LG-16", "钓鱼页里的链接在新标签页打开另一个页面", "新标签页也有提示条"],
+  ["确认页", "LG-20", "看确认页的内容", "大字显示链接真实去向的域名、邮件标题、Phi AI 的总结；「返回」是主按钮，「仍然打开」是不显眼的小链接"],
+  ["确认页", "LG-21", "在从邮件新开的标签页里点「返回」", "回到邮件（或关闭这个标签页），不打开网站"],
+  ["确认页", "LG-22", "点「仍然打开」", "打开网站并带提示条；同一标签页再访问这个地址不再出确认页"],
+  ["确认页", "LG-23", "「仍然打开」后等 1 分钟以上（让扩展后台休眠），在同一标签页再访问", "仍不再出确认页"],
+  ["确认页", "LG-24", "点「返回」后检查标签页", "不会绕回确认页、不会循环"],
+  ["提示条", "LG-30", "看提示条，点「为什么？」，再点「隐藏」", "显示真实域名；展开后有邮件标题和 Phi AI 的理由；隐藏后本页不再显示"],
+  ["提示条", "LG-31", "在钓鱼站内点链接跳到同站另一页", "提示条仍在"],
+  ["提示条", "LG-32", "在同一标签页的地址栏自己输入一个无关网址（如 example.com）", "提示条消失，之后不再提示"],
+  ["提示条", "LG-33", "真实危险邮件的落地站（有 Cloudflare 验证）", "验证页上已出确认页或提示条"],
+  ["遮罩", "LG-40", "在落地页点进密码框", "立刻出遮罩「先别输入密码」；之后敲的字不会进到页面的输入框"],
+  ["遮罩", "LG-41", "打开密码框自动获得焦点的页面，直接打字", "第一下按键就被拦下，遮罩出现，页面收不到字符"],
+  ["遮罩", "LG-42", "点进银行卡号输入框（autocomplete=cc-number）", "遮罩「先别输入银行卡信息」"],
+  ["遮罩", "LG-43", "点进验证码：拆成 6 个单格的输入框，或单个 6 位数字框", "遮罩「先别输入验证码」"],
+  ["遮罩", "LG-44", "页面里嵌着另一个域名的 iframe 银行卡表单，点进卡号框", "顶层页面出遮罩，焦点被移到遮罩按钮上"],
+  ["遮罩", "LG-45", "两步表单：先只有邮箱框，填完点下一步后出现密码框（网址不变）", "邮箱步骤不出遮罩；点进新出现的密码框时出遮罩"],
+  ["遮罩", "LG-46", "点进普通文本框（姓名、搜索）", "不出遮罩"],
+  ["遮罩", "LG-47", "看遮罩内容", "大字真实域名、「你是从一封 Phi 高度怀疑的邮件来到这里的」、「它要你输入密码」、首次访问时「你以前从没访问过这个网站」；Phi AI 理由先显示「正在检查」，随后替换为理由"],
+  ["遮罩", "LG-48", "点「离开这个页面」", "从邮件打开的标签页被关闭，回到 Gmail；不是从邮件打开的转到新标签页"],
+  ["遮罩", "LG-49", "看「我确定这就是我要访问的网站」并点它", "前 3 秒不可点；之后可点，点后遮罩消失、可以正常输入，本站再点密码框不再弹"],
+  ["遮罩", "LG-50", "在 LG-49 之后，钓鱼站把你带到同一链路的另一个域名的表单", "新域名上点进密码框再次出遮罩"],
+  ["遮罩", "LG-51", "可疑邮件里一个与诈骗无关的普通链接（Phi AI 判无关）", "有提示条，但点进密码框不出遮罩"],
+  ["遮罩", "LG-52", "链接被静态检查标为高或严重（如显示地址与实际不符）", "即使 Phi AI 判无关也出遮罩"],
+  ["下载", "LG-60", "在落地页点下载一个 .exe", "下载被暂停，出遮罩「先别打开这个文件」"],
+  ["下载", "LG-61", "在 LG-60 的遮罩里分别点「离开」和「我确定」", "离开：下载被取消；我确定：下载继续并完成"],
+  ["下载", "LG-62", "分别下载 .lnk、.zip 和 .pdf", ".lnk、.zip 被拦，.pdf 不拦"],
+  ["下载", "LG-63", "下载链接不带 Referer（rel=noreferrer）", "照样被拦"],
+  ["补救", "LG-70", "越过遮罩后在密码框输入并提交", "下一页出现补救卡片：改密码、其他用同一密码的网站也改"],
+  ["补救", "LG-71", "补救卡片出现后再跳转一次", "卡片只出现一次"],
+  ["补救", "LG-72", "越过遮罩后不输入任何内容就提交", "不出补救卡片"],
+  ["补救", "LG-73", "对比：页面冒充品牌表里的品牌 / 虚构品牌", "前者卡片有「前往 <官网>」按钮；后者没有，提示用自己的书签或官方 App"],
+  ["豁免与开关", "LG-80", "让 Phi Chat 的浏览器任务（agent）打开同一个钓鱼链接", "agent 的标签页不出确认页、提示条和遮罩"],
+  ["豁免与开关", "LG-81", "在邮件防护面板关闭「检查已打开的邮件」，再访问之前记下的钓鱼链接", "无任何提示（记录已清空）"],
+  ["豁免与开关", "LG-82", "在 Phi 设置 ▸ AI 里关闭邮件防护，再访问", "无任何提示"],
+  ["豁免与开关", "LG-83", "重启浏览器后（7 天内）再访问记下的钓鱼链接", "仍有提示"],
+  ["隐私", "LG-90", "（开发/canary）在 Langfuse 看一次 phi-agent.mail-landing 请求", "网址不含 ? 和 # 之后的部分；正文、标题、输入框标签里的邮箱地址只剩 @域名；表单只有类型和标签，没有填写的值"],
+  ["隐私", "LG-91", "打开邮件防护面板 ▸ 设置 ▸ 关于", "「会发送什么」多一条落地页说明；「保存在这台设备上」多一条 7 天链接记录说明"],
+  ["语言", "LG-95", "切换浏览器界面语言后重复 LG-20、LG-30、LG-47、LG-70", "确认页、提示条、遮罩、补救卡片的文字随之变化，Phi AI 理由也用该语言"]
+];
+  var KEY = "mail-guard-landing-qa-checks";
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { state = {}; }
+  var box = document.getElementById("checklist");
+  var progress = document.getElementById("progress");
+  var lastGroup = "";
+  function update() {
+    var done = CHECKS.filter(function (c) { return state[c[1]]; }).length;
+    progress.textContent = "已勾选 " + done + " / " + CHECKS.length + "（勾选只保存在你自己的浏览器里）";
+  }
+  CHECKS.forEach(function (c) {
+    if (c[0] !== lastGroup) { var h = document.createElement("h4"); h.textContent = c[0]; box.appendChild(h); lastGroup = c[0]; }
+    var row = document.createElement("div"); row.className = "check";
+    var input = document.createElement("input"); input.type = "checkbox"; input.id = "chk-" + c[1]; input.checked = !!state[c[1]];
+    input.addEventListener("change", function () { state[c[1]] = input.checked; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} update(); });
+    var label = document.createElement("label"); label.setAttribute("for", input.id);
+    var id = document.createElement("code"); id.textContent = c[1]; label.appendChild(id);
+    label.appendChild(document.createTextNode(" " + c[2]));
+    var exp = document.createElement("span"); exp.className = "exp"; exp.textContent = "预期：" + c[3];
+    label.appendChild(exp);
+    row.append(input, label); box.appendChild(row);
+  });
+  update();
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    securityLevel: "strict",
+    theme: matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "neutral",
+  });
+</script>
+</body>
+</html>
