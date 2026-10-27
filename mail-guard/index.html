@@ -182,15 +182,24 @@ flowchart TD
 <section class="s" id="sites">
   <div class="num">1</div>
   <h2>在哪些网站生效</h2>
-  <p class="kicker">只在下面这些网址的顶层页面生效（不进 iframe）。每个邮箱有自己的「适配器」负责读页面，之后的检测流程全部共用。</p>
+  <p class="kicker">只在下面这些网址的顶层页面生效（不进 iframe），以及 Outlook 从这些页面弹出的独立邮件窗口。每个邮箱有自己的「适配器」负责读页面，之后的检测流程全部共用。</p>
   <div class="tablebox"><table>
     <tr><th>邮箱</th><th>网址</th><th>读邮件的方式</th><th>认证结果从哪来（信任的服务器）</th><th>附件</th><th>只在这个邮箱有的处理</th></tr>
     <tr><td><b>Gmail</b></td><td class="nowrap"><code>mail.google.com</code></td><td>读阅读窗格的页面结构</td><td>在后台取 Gmail 的「显示原始邮件」页面（<code>?view=om</code>，用用户自己的登录），只认第一条 <code>mx.google.com</code> 写的 Authentication-Results</td><td>读文件名</td><td>Gmail 自动把像网址的文字变成链接（如 <code>2.14.0.</code>），这类链接不按「不加密链接 / IP 链接」处理；读 Gmail 自己的警告横幅；<code>via</code> 显示为用户自己组织的域名（群组转发）不算冒充</td></tr>
     <tr><td><b>Outlook</b></td><td><code>outlook.live.com</code><br><code>outlook.office.com</code><br><code>outlook.office365.com</code><br><code>outlook.cloud.microsoft</code></td><td>读阅读窗格里和语言无关的元素 id（<code>MSG_…_FROM</code> 等）</td><td>页面里的小脚本借 Outlook 自己的登录会话调 Outlook 邮件接口取邮件头，只交回认证相关几行和附件名；只认 <code>mx.microsoft.com</code>。令牌不离开页面。垃圾邮件文件夹会自动改为按单封读取</td><td>读文件名（同一次接口请求，只要名字，不取内容；正文里的内嵌图片不算附件）</td><td>Outlook 会把所有链接改写成 SafeLinks（<code>*.safelinks.protection.outlook.com</code>），检测前还原成发件人原本的地址和显示文字</td></tr>
     <tr><td><b>Yahoo Mail</b></td><td class="nowrap"><code>mail.yahoo.com</code></td><td>读 Yahoo 的 <code>data-test-id</code>；发件人地址从邮件头头像图片的地址里取</td><td>页面里的小脚本旁观 Yahoo 页面自己请求回来的数据，其中带 <code>authenticationResults</code> 和附件列表；只认 <code>mta.yahoo.com</code>。不额外发请求</td><td>读文件名（来自同一份数据；正文里的内嵌图片不算附件）</td><td>新版界面（网址带 <code>/n/</code>）</td></tr>
   </table></div>
-  <div class="note"><b>尚未支持：</b>Yahoo! JAPAN、GMX / WEB.DE、iCloud、Naver、Proton 等，以及所有手机 App 和桌面客户端。网页邮箱的「弹出新窗口查看」等变体以实测为准。</div>
-  <div class="note"><b>安全边界：</b>后台只接受来自上面这些网址（精确匹配域名）的检测请求，仿冒域名（如 <code>mail.yahoo.com.evil.example</code>）会被拒绝。</div>
+  <h3>支持的版式（2026-10-27 实测）</h3>
+  <p>「当前打开的是哪封邮件」看页面内容，不看网址：Gmail 阅读窗格里网址一直停在 <code>#inbox</code>，Yahoo 预览窗格停在 <code>/n/inbox/…</code>，这些版式下照样检查。</p>
+  <div class="tablebox"><table>
+    <tr><th>邮箱</th><th>版式</th><th>在哪里切换</th></tr>
+    <tr><td><b>Gmail</b></td><td>无分割；垂直分割、水平分割（阅读窗格）；「在新窗口中打开」的邮件窗口</td><td>收件箱右上角「切换分割窗格模式」旁的下拉箭头</td></tr>
+    <tr><td><b>Outlook</b></td><td>阅读窗格在右侧、底部、全屏（关闭邮件回到列表时徽章消失）；仅弹出窗口，以及「在新窗口中打开」</td><td>设置 ▸ 邮件 ▸ 布局 ▸ 阅读窗格</td></tr>
+    <tr><td><b>Yahoo Mail</b></td><td>列表（整页看信，返回列表时徽章消失）；预览窗格在右侧、底部</td><td>右上角齿轮 ▸ 预览窗格（List / Right / Bottom）</td></tr>
+  </table></div>
+  <div class="note"><b>Outlook 弹出窗口：</b>徽章、横幅和面板都和主窗口一样，但拿不到微软的认证结果（SPF / DKIM / DMARC）和附件名，其余检查照常。弹出的是回复草稿时没有收到的邮件可查，不显示徽章。</div>
+  <div class="note"><b>尚未支持：</b>Yahoo! JAPAN、GMX / WEB.DE、iCloud、Naver、Proton 等，以及所有手机 App 和桌面客户端。</div>
+  <div class="note"><b>安全边界：</b>后台只接受来自上面这些网址（精确匹配域名）的检测请求，Outlook 弹出窗口按它继承的来源域名判断；仿冒域名（如 <code>mail.yahoo.com.evil.example</code>）会被拒绝。</div>
 </section>
 
 <section class="s" id="inputs">
@@ -809,7 +818,12 @@ stateDiagram-v2
     ["开关", "关闭检查后只剩灰色盾牌，点它打开设置；重新开启后恢复检查", "设置说明写「关闭后，主题旁会保留一个灰色盾牌」；关闭期间不发送任何请求"],
     ["类型", "以曝光私密影像或资料相威胁、要求付款的勒索邮件", "可疑或高风险，标题为「疑似敲诈勒索」（比特币图标）"],
     ["语言", "切换浏览器界面语言（简繁中日韩德西法荷英）后界面文字随之变化", "终审总结也用该语言；没有任何地方出现「已确认」这类绝对说法"],
-    ["隐私", "（开发/canary）在 Langfuse 查看一次快速检查请求，只含域名而非完整地址", "终审请求才含完整发件人地址和正文"]
+    ["隐私", "（开发/canary）在 Langfuse 查看一次快速检查请求，只含域名而非完整地址", "终审请求才含完整发件人地址和正文"],
+    ["版式", "Gmail 切到垂直分割、水平分割，在阅读窗格里依次点几封邮件", "每封都出现徽章并随邮件更新，网址停在 #inbox 也一样"],
+    ["版式", "Gmail 打开一封邮件后点「在新窗口中打开」", "新窗口里主题旁有徽章，结果与主窗口一致"],
+    ["版式", "Outlook 阅读窗格依次设为右侧、底部、全屏，点几封邮件", "都有徽章；全屏模式关闭邮件回到列表后徽章消失，不会再出现"],
+    ["版式", "Outlook 阅读窗格设为仅弹出窗口（或对邮件用「在新窗口中打开」）", "弹出窗口里有徽章和完整结果；弹出的回复草稿不显示徽章"],
+    ["版式", "Yahoo 预览窗格设为 Right、Bottom，点几封邮件；再设回 List 并返回列表", "预览窗格里每封都有徽章；List 模式返回列表时徽章消失"]
   ];
   var KEY = "mail-guard-qa-checks";
   var state = {};
