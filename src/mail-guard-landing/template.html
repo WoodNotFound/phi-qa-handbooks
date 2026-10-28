@@ -115,26 +115,25 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
   <a href="#overview">0 · 一页看懂</a>
   <a href="#record">1 · 哪些邮件的链接会被记下</a>
   <a href="#taint">2 · 怎么认出「从这封邮件来的页面」</a>
-  <a href="#tiers">3 · 四档提示</a>
-  <a href="#fields">4 · 什么算「开始交出秘密」</a>
-  <a href="#check">5 · Phi AI 的落地页检查</a>
-  <a href="#quiet">6 · 不会提示的情况</a>
-  <a href="#privacy">7 · 什么会离开浏览器</a>
-  <a href="#switch">8 · 开关与数据保存</a>
-  <a href="#limits">9 · 已知限制</a>
-  <a href="#testing">10 · 测试指南与清单</a>
+  <a href="#strip">3 · 页面顶部的提示条</a>
+  <a href="#check">4 · Phi AI 的落地页检查</a>
+  <a href="#quiet">5 · 不会提示的情况</a>
+  <a href="#privacy">6 · 什么会离开浏览器</a>
+  <a href="#switch">7 · 开关与数据保存</a>
+  <a href="#limits">8 · 已知限制</a>
+  <a href="#testing">9 · 测试指南与清单</a>
 </nav>
 <main>
 <header class="hero">
   <div class="eyebrow">Kensington · 邮件防护 · 落地页守卫 · QA</div>
   <h1>落地页守卫 QA 手册</h1>
-  <p class="lede">邮件防护已经提示了「这封邮件很可疑」，用户还是点开了里面的链接（或者复制链接自己打开）。落地页守卫会跟着用户到那封邮件引向的页面，在用户<b>开始交出密码、卡号、验证码或运行下载的程序之前</b>拦一下。这份手册讲它什么时候生效、页面上会出现什么、按什么规则判断，以及每一项怎么测、怎样算通过。</p>
-  <p>依据 phi-ai <code>feature/mail-guard-landing-guard</code> @ <code>ac0dad395</code>（2026-10-28，已 rebase 到 staging <code>a0601d777</code>）逐条核对，以代码为准。</p>
+  <p class="lede">邮件防护已经提示了「这封邮件很可疑」，用户还是点开了里面的链接（或者复制链接自己打开）。落地页守卫会跟着用户到那封邮件引向的页面，在<b>页面顶部挂一条红色提示条</b>，说明这个页面是从可疑邮件打开的、它真实的网站是哪个。它只提醒，不拦截：没有确认页、遮罩、下载暂停或补救卡片（2026-10-28 决定只保留提示条）。这份手册讲它什么时候出现、按什么规则判断，以及每一项怎么测、怎样算通过。</p>
+  <p>依据 phi-ai <code>feature/mail-guard-landing-guard</code> @ <code>3739fa874</code>（2026-10-28）逐条核对，以代码为准。</p>
   <div class="facts">
-    <div class="fact"><b>4</b><span>档提示：确认页、提示条、遮罩、补救卡片</span></div>
+    <div class="fact"><b>1</b><span>种提示：页面顶部的提示条</span></div>
     <div class="fact"><b>7 天</b><span>可疑邮件的链接在本机记住多久</span></div>
     <div class="fact"><b>30 分钟</b><span>标签页没有新导航就不再跟踪</span></div>
-    <div class="fact"><b>3 秒</b><span>遮罩上「我确定」要等多久才能点</span></div>
+    <div class="fact"><b>1 秒</b><span>页面安静多久后请 Phi AI 看这个页面</span></div>
     <div class="fact"><b>0</b><span>输入框里填的内容被读取或发送的次数</span></div>
   </div>
 </header>
@@ -146,22 +145,16 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
 flowchart TD
   A["用户打开一封邮件"] --> B{"邮件防护判断"}
   B -- "低风险" --> N["不记链接，什么都不做"]
-  B -- "需留意及以上，开始终审" --> R["记下邮件里的链接（暂定）"]
+  B -- "需留意及以上，开始终审" --> R["记下邮件里的链接"]
   R --> V{"终审结论"}
   V -- "正常（无静态保底）" --> W["撤回记录"]
-  V -- "钓鱼且把握 ≥ 0.7" --> H["高危记录"]
-  V -- "可疑 / 把握不足" --> C["确认记录"]
-  H --> G["① 打开前先出确认页"]
-  C --> S["② 落地页顶部提示条"]
-  G -- "仍然打开" --> S
-  S --> F{"点进密码 / 卡号 / 验证码框，
-或开始下载程序"}
-  F --> O["③ 遮罩：挡在第一下按键之前"]
-  O -- "离开" --> L["关闭标签页，回到邮件"]
-  O -- "我确定（3 秒后可点）" --> T{"填了内容并提交？"}
-  T -- "是" --> HC["④ 下一页出现补救卡片"]
+  V -- "钓鱼 / 可疑 / 把握不足" --> C["保留记录 7 天"]
+  C --> T["用户点开、复制打开或被跳转到这些链接"]
+  T --> S["页面顶部出现提示条"]
+  S --> Y["「为什么？」里显示邮件标题，
+和 Phi AI 对这个页面的理由"]
   </pre></div>
-  <p>整件事分两部分：<b>邮件页</b>负责「记下危险邮件的链接」，<b>扩展后台</b>负责「认出从这些链接来的标签页」并把守卫脚本放进去；守卫脚本在页面里画提示条和遮罩，并请 phi-agent 判断这个页面和那封邮件是不是一回事。</p>
+  <p>整件事分两部分：<b>邮件页</b>负责「记下危险邮件的链接」，<b>扩展后台</b>负责「认出从这些链接来的标签页」并把守卫脚本放进页面的顶层框架；守卫脚本画提示条，并请 phi-agent 判断这个页面和那封邮件是不是一回事，把理由放进「为什么？」。</p>
 </section>
 
 <section class="s" id="record">
@@ -170,9 +163,8 @@ flowchart TD
   <p>只有邮件防护已经起疑的邮件才会记。记录保存在本机（扩展存储，最多 500 条、7 天），不会单独上传。</p>
   <div class="tablebox"><table>
     <tr><th>时机</th><th>记录状态</th><th>效果</th></tr>
-    <tr><td>邮件到「需留意」及以上、开始终审</td><td>暂定</td><td>落地页有提示条和遮罩，不出确认页</td></tr>
-    <tr><td>终审：钓鱼且把握 ≥ 0.7，或静态检查保底为高风险</td><td>高危</td><td>额外在打开前出确认页（第 ① 档）</td></tr>
-    <tr><td>终审：可疑，或钓鱼但把握 &lt; 0.7；或静态检查保底为可疑</td><td>确认</td><td>提示条、遮罩</td></tr>
+    <tr><td>邮件到「需留意」及以上、开始终审</td><td>暂定</td><td>落地页有提示条</td></tr>
+    <tr><td>终审：钓鱼、可疑或把握不足；或静态检查保底为可疑及以上</td><td>保留（高危 / 确认）</td><td>落地页有提示条。高危和确认只是记录里的状态，提示条一样</td></tr>
     <tr><td>终审：正常，且静态检查保底低于可疑</td><td>撤回</td><td>记录删除，已在跟踪的标签页解除</td></tr>
     <tr><td>终审失败或超时</td><td>暂定（24 小时后过期）</td><td>同暂定</td></tr>
     <tr><td>Jev 不可用、但静态检查保底为可疑 / 高风险</td><td>确认 / 高危</td><td>直接记录，不等终审</td></tr>
@@ -183,7 +175,6 @@ flowchart TD
     <li>邮件里所有链接的<b>真实去向</b>：只拆 Gmail 的 <code>google.com/url</code>、Outlook SafeLinks 和已登记的点击追踪器这几种「转发点击」的包装；其他网址上的跳转参数（如 <code>?return=https://www.paypal.com/</code>、<code>redirect_uri=…</code>）属于那个网址自己，不拆。</li>
     <li>按<b>注册域名</b>记（<code>login.evil.top/a</code> → <code>evil.top</code>）；多人共用的主机按<b>主机 + 路径</b>记：短链接、免费托管/对象存储、SharePoint 租户、Google 文档/表单、Microsoft Forms、OneDrive 等。</li>
     <li>品牌表里品牌<b>自己的普通域名不记</b>（钓鱼邮件常附真品牌链接装样子）；但品牌名下的共用主机照记（<code>sites.google.com</code>、<code>docs.google.com/forms/…</code>、<code>goo.gl/…</code>）。</li>
-    <li>静态检查标为高 / 严重的链接单独记一份「保底目的地」：这些页面 Phi AI 说无关也照样出遮罩。</li>
     <li>从邮件正文里<b>复制出来的网址</b>也加进这封邮件的记录。</li>
   </ul>
 </section>
@@ -206,102 +197,75 @@ flowchart TD
   <p>跟踪状态存在浏览器会话存储里，扩展后台休眠再醒来不会丢；浏览器重启后清空，但 7 天内再访问记录里的链接会重新开始跟踪。</p>
 </section>
 
-<section class="s" id="tiers">
+<section class="s" id="strip">
   <div class="num">3</div>
-  <h2>四档提示</h2>
-  <h3>① 确认页（仅高危记录）</h3>
-  <p>请求还没发到对方网站之前就被换成扩展自己的确认页，点击、粘贴、重定向都一样。页面上：大字「这个链接会打开」+ 真实域名、邮件标题、Phi AI 的总结；主按钮「返回」，不显眼的「仍然打开」。「仍然打开」只对这个标签页、这个目的地放行，扩展后台休眠重启后仍有效。</p>
-  <h3>② 提示条</h3>
-  <p>被跟踪的每个页面顶部一条细横条：「从一封 Phi 高度怀疑的邮件打开。真实网站：<code>evil.top</code>」。「为什么？」展开邮件标题和 Phi AI 对这个页面的理由；「隐藏」只在当前页收起。不挡操作。</p>
-  <h3>③ 遮罩</h3>
-  <p>用户点进敏感输入框（第 4 节）的那一刻，或在已经获得焦点的敏感输入框里按第一下键，页面变暗，弹出遮罩，按键不会到达页面。标题按要交出的东西写：先别输入密码 / 银行卡信息 / 验证码 / 证件号码 / 先别打开这个文件。内容：</p>
+  <h2>页面顶部的提示条</h2>
+  <p>被跟踪标签页的每个页面（只在顶层页面，iframe 里没有）顶部有一条红色横条：「从一封 Phi 高度怀疑的邮件打开。」+ 一个圆角标签「真实网站：<code>evil.top</code>」（注册域名）。右侧两个按钮：</p>
   <ul>
-    <li>大字的真实域名；</li>
-    <li>「你是从一封 Phi 高度怀疑的邮件来到这里的：“邮件标题”」；</li>
-    <li>「它要你输入密码。」（按种类）；首次访问时「你以前从没访问过这个网站。」；</li>
-    <li>Phi AI 的判断：先显示「Phi AI 正在检查这个页面…」，回来后原地换成理由；检查失败显示「Phi AI 没能检查这个页面。」</li>
+    <li><b>为什么？</b>：在横条下展开一块白色面板，第一行「你是从一封 Phi 高度怀疑的邮件来到这里的：“邮件标题”」；Phi AI 的落地页检查回来后，下面加上它对这个页面的理由（最多 3 句，界面语言）。检查失败或还没回来时只有第一行。</li>
+    <li><b>隐藏</b>：本页收起横条；跳到下一个页面会重新出现。</li>
   </ul>
-  <p>按钮：「离开这个页面」（从邮件打开的标签页直接关闭并回到邮件，否则转到新标签页）；「我确定这就是我要访问的网站」3 秒后才能点，只对这个域名、这次跟踪生效，换到别的域名会重新拦。</p>
-  <p>下载：跟踪中的页面开始下载程序、脚本、磁盘镜像或压缩包时，下载先暂停并弹同样的遮罩；「离开」取消下载，「我确定」继续下载。</p>
-  <h3>④ 补救卡片</h3>
-  <p>点了「我确定」、在敏感输入框里输入了内容，随后提交或页面跳走，下一个页面右上角出现卡片：「你可能刚把密码交给了诈骗网站」+ 按种类给的步骤（改密码、其他网站同密码也改、打银行卡背面电话冻卡、不要把验证码给任何人、删除下载的文件等）。只有当 Phi AI 认出的冒充对象在品牌表里时，才给「前往 官网」按钮；否则提示用自己的书签或官方 App。卡片只出现一次。</p>
-</section>
-
-<section class="s" id="fields">
-  <div class="num">4</div>
-  <h2>什么算「开始交出秘密」</h2>
-  <p>只看页面结构，不看任何语言的文字，所以任何语言的页面判断方式一样。</p>
-  <div class="tablebox"><table>
-    <tr><th>种类</th><th>认定条件</th></tr>
-    <tr><td>密码</td><td><code>type=password</code>，或 <code>autocomplete</code> 含 <code>current-password</code> / <code>new-password</code></td></tr>
-    <tr><td>银行卡</td><td><code>autocomplete</code> 含 <code>cc-number</code>、<code>cc-csc</code>、<code>cc-exp*</code></td></tr>
-    <tr><td>验证码</td><td><code>autocomplete=one-time-code</code>；或表单里只有一个 4–8 位数字框；或一排 4–8 个单格数字框</td></tr>
-    <tr><td>下载</td><td>exe msi bat cmd scr ps1 vbs js jar apk dmg pkg app iso img zip rar 7z lnk hta wsf vhd vhdx msix appx cab sh command tar gz tgz xz</td></tr>
-    <tr><td>不算</td><td>隐藏的输入框、按钮、复选框、普通文本框（姓名、搜索、邮箱）</td></tr>
-  </table></div>
-  <p>iframe 里的输入框也算：子框架只上报，遮罩由顶层页面画，并把焦点拉到遮罩按钮上。页面在不跳转的情况下换出新表单（先邮箱后密码）时，旧的 Phi AI 判断不再算数，按新表单重新判断。</p>
+  <p>提示条不挡任何操作：点输入框、打字、提交、下载都和平常一样，守卫不监听输入框，也不读输入的内容。颜色跟随系统深浅色。横条是贴在页面最顶端的实心红色，Phi 浏览器的「标题栏跟随页面配色」会因此把地址栏一带也染红，这是浏览器自己的行为。</p>
 </section>
 
 <section class="s" id="check">
-  <div class="num">5</div>
+  <div class="num">4</div>
   <h2>Phi AI 的落地页检查</h2>
   <p>phi-agent 新接口 <code>POST /api/v1/mail/landing-check</code>（Langfuse 记作 <code>phi-agent.mail-landing</code>，模型默认与终审相同，可用 <code>PHI_MAIL_LANDING_MODEL</code> 改）。页面安静 1 秒后问一次，最多等 5 秒；表单换了样子再问；同一页面同一表单只问一次。</p>
   <div class="tablebox"><table>
     <tr><th>发送</th><th>返回</th></tr>
     <tr><td>邮件标题、威胁类型、终审总结与类别、被点的目的地；页面网址（去掉 ? 和 # 之后）、经过的域名（最多 10 个）、标题、可见文字（≤ 4000 字）、输入框的种类和标签；以前是否访问过；界面语言</td><td>结论 dangerous / suspicious / unrelated + 把握；页面冒充谁；最多 3 句理由（界面语言）；页面要你填什么</td></tr>
   </table></div>
-  <p>结论 <b>unrelated 且把握 ≥ 0.7</b>、并且这个目的地没有静态检查保底时，不出遮罩（提示条仍在）。超时 25 秒；失败时遮罩照常出现，只是没有理由。</p>
+  <p>扩展只用返回里的<b>理由</b>，放进提示条的「为什么？」；结论、把握、冒充对象和「要你填什么」不影响界面（提示条总是在），只留在返回和 Langfuse 记录里。输入框只上报种类（密码、卡号、卡安全码、有效期、验证码、邮箱、电话、其他）和标签，种类按 <code>type</code>、<code>autocomplete</code> 和验证码表单的形状判断，不看任何语言的文字。超时 25 秒；失败时提示条照常，只是没有理由。</p>
 </section>
 
 <section class="s" id="quiet">
-  <div class="num">6</div>
+  <div class="num">5</div>
   <h2>不会提示的情况</h2>
   <ul>
     <li>低风险邮件、终审判为正常的邮件里的链接。</li>
-    <li>品牌表里品牌自己的普通域名（提示条可能因链路经过而出现，但不出遮罩）。</li>
-    <li>Phi AI 判为与诈骗无关（≥ 0.7）且无保底的页面：只有提示条。</li>
+    <li>品牌表里品牌自己的普通域名（但链路经过记录里的地址时，提示条照样出现）。</li>
     <li>用户自己去往记录之外的网站之后。</li>
     <li>agent 驱动的标签页。</li>
-    <li>邮件防护关闭（面板开关或 Phi 设置）：记录、跟踪、确认页规则全部清空。</li>
+    <li>页面里的 iframe。</li>
+    <li>邮件防护关闭（面板开关或 Phi 设置）：记录和跟踪全部清空。</li>
   </ul>
 </section>
 
 <section class="s" id="privacy">
-  <div class="num">7</div>
+  <div class="num">6</div>
   <h2>什么会离开浏览器</h2>
   <ul>
-    <li>新增的只有第 5 节的落地页检查，且只针对被跟踪的页面。</li>
-    <li>从不发送：输入框里填的内容（只看长度是否为 0）、Cookie、网址的查询串和片段、未被跟踪页面的任何内容。正文、标题和输入框标签里的邮箱地址只保留 <code>@域名</code>。</li>
+    <li>新增的只有第 4 节的落地页检查，且只针对被跟踪的页面。</li>
+    <li>从不发送：输入框里填的内容（不读取）、Cookie、网址的查询串和片段、未被跟踪页面的任何内容。正文、标题和输入框标签里的邮箱地址只保留 <code>@域名</code>。</li>
     <li>邮件防护「关于」页新增两条说明：打开可疑邮件链接时会发送什么；可疑邮件的链接在本机保存 7 天。</li>
   </ul>
 </section>
 
 <section class="s" id="switch">
-  <div class="num">8</div>
+  <div class="num">7</div>
   <h2>开关与数据保存</h2>
   <div class="tablebox"><table>
     <tr><th>数据</th><th>位置</th><th>保存多久</th></tr>
     <tr><td>可疑邮件的链接记录</td><td>扩展本地存储 <code>phi.mailGuard.landing.records.v1</code></td><td>7 天（终审失败的 24 小时），最多 500 条</td></tr>
     <tr><td>标签页跟踪状态、近 10 分钟访问记录</td><td>浏览器会话存储</td><td>浏览器关闭即清空</td></tr>
-    <tr><td>「仍然打开」的放行</td><td>浏览器会话存储</td><td>标签页关闭或浏览器关闭</td></tr>
   </table></div>
   <p>没有新开关：跟随邮件防护面板的「检查已打开的邮件」和 Phi 设置里的邮件防护。任一关闭立即清空上面全部数据。</p>
 </section>
 
 <section class="s" id="limits">
-  <div class="num">9</div>
+  <div class="num">8</div>
   <h2>已知限制</h2>
   <ul>
+    <li>只提醒不拦截：用户无视提示条照样能输入密码、卡号或下载文件。</li>
     <li>最后一步不在落地页上的诈骗（电话、礼品卡、正规网银转账、买币）不在范围内。</li>
-    <li>真品牌身份提供方上的 OAuth 授权钓鱼不拦。</li>
-    <li>Shadow DOM 里的输入框认不出；没有 <code>autocomplete</code> 标记的卡号框、证件号框只能靠 Phi AI 的判断。</li>
-    <li>在 Google 这类共用主机上点「我确定」，对整个注册域名生效。</li>
+    <li>提示条只在顶层页面：钓鱼表单整页嵌在别的域名 iframe 里时，横条写的是外层页面的域名。</li>
     <li>在 Phi 之外读的邮件（手机、桌面客户端）无法跟踪。</li>
   </ul>
 </section>
 
 <section class="s" id="testing">
-  <div class="num">10</div>
+  <div class="num">9</div>
   <h2>测试指南与清单</h2>
   <h3>环境准备</h3>
   <ol>
@@ -314,20 +278,17 @@ flowchart TD
   <h3>测试站需要的页面</h3>
   <div class="tablebox"><table>
     <tr><th>页面</th><th>用于</th></tr>
-    <tr><td>密码登录页（另有一版密码框自动获得焦点）</td><td>LG-40、41、47–50、70–73</td></tr>
-    <tr><td>先邮箱、后密码的两步表单（不跳转）</td><td>LG-45</td></tr>
-    <tr><td>银行卡表单；放在另一个域名 iframe 里的银行卡表单</td><td>LG-42、44</td></tr>
-    <tr><td>验证码：6 个单格 / 单个 6 位数字框</td><td>LG-43</td></tr>
-    <tr><td>下载 .exe / .lnk / .zip / .pdf，及不带 Referer 的下载</td><td>LG-60–63</td></tr>
+    <tr><td>密码登录页（另有一版密码框自动获得焦点）</td><td>LG-30、34、40、41、43</td></tr>
+    <tr><td>银行卡表单；放在另一个域名 iframe 里的表单</td><td>LG-35、40</td></tr>
+    <tr><td>下载 .exe / .zip</td><td>LG-42</td></tr>
     <tr><td>短链接式 302 跳转、新标签页打开的链接、站内跳转</td><td>LG-14、16、31</td></tr>
-    <tr><td>与诈骗无关的普通页面</td><td>LG-51</td></tr>
   </table></div>
   <h3>测试清单</h3>
   <p class="progress" id="progress"></p>
   <div id="checklist"></div>
 </section>
 
-<footer>依据 phi-ai <code>feature/mail-guard-landing-guard</code> @ <code>ac0dad395</code>（2026-10-28）。代码位置：扩展 <code>ai-extension/kensington/src/background/landing/</code>、<code>ai-extension/kensington/src/mail-guard/landing/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>（<code>landing-route.ts</code>），说明 <code>docs/kensington-mail-guard.md</code>「Pages a risky email leads to」一节。</footer>
+<footer>依据 phi-ai <code>feature/mail-guard-landing-guard</code> @ <code>3739fa874</code>（2026-10-28）。代码位置：扩展 <code>ai-extension/kensington/src/background/landing/</code>、<code>ai-extension/kensington/src/mail-guard/landing/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>（<code>landing-route.ts</code>），说明 <code>docs/kensington-mail-guard.md</code>「Pages a risky email leads to」一节。</footer>
 </main>
 </div>
 
