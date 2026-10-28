@@ -79,6 +79,12 @@ td.nowrap { white-space: nowrap; }
 /* Replica of the extension's badge: 18px pill, 12px type, the same level colours. */
 .pill { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 9px 0 7px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap; border: 1px solid transparent; vertical-align: middle; }
 .pill svg { width: 12px; height: 12px; flex: none; }
+td.threat { white-space: nowrap; }
+td.threat .tcell { display: flex; align-items: center; gap: 10px; }
+td.threat .ticon { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 9px; background: var(--high); color: var(--on-solid); }
+td.threat .ticon svg { width: 20px; height: 20px; }
+td.threat b { display: block; line-height: 1.3; }
+td.threat small { display: block; font-size: 12px; line-height: 1.3; color: var(--ink-faint); }
 .p-low { background: var(--low-bg); color: var(--low-fg); }
 .p-caution { background: var(--caution-bg); color: var(--caution-fg); }
 .p-suspicious { background: var(--suspicious); color: var(--on-solid); }
@@ -489,14 +495,14 @@ flowchart LR
   <h2>能识别的危险类型</h2>
   <p class="kicker">等级为可疑或高风险时，标题和横幅会写出威胁类型，例如「高风险 · 疑似钓鱼」，并用该类型的图标。</p>
   <div class="tablebox"><table>
-    <tr><th>类型</th><th>一句话说明（界面原文）</th><th>来自模型类别</th><th>来自静态检查</th></tr>
-    <tr><td>钓鱼（鱼钩）</td><td>可能企图获取你的密码、银行卡或账号信息。</td><td>窃取凭据</td><td>显示地址不符、链接标成品牌却指向别处、仿冒域名、误导性域名、同形域名、登录页在无关域名/免费托管/公共存储、表单回显链接、冒充品牌且要求登录</td></tr>
-    <tr><td>恶意软件（虫子）</td><td>其中的附件或链接可能会感染你的设备。</td><td>恶意软件投递</td><td>可执行附件、伪装成单据的可执行文件、双扩展名、宏文档、网页附件、磁盘镜像、压缩包、文件名反向字符/隐藏字符、伪装成附件的链接、危险协议链接、本地文件链接</td></tr>
-    <tr><td>付款诈骗（钞票）</td><td>似乎在要求你转账或更改收款信息。</td><td>付款诈骗、商务邮件欺诈</td><td>组织外个人邮箱提出的转账/付款请求</td></tr>
-    <tr><td>礼品卡诈骗（礼物）</td><td>似乎在要求你购买礼品卡并发送卡密。</td><td>礼品卡诈骗</td><td>—</td></tr>
-    <tr><td>冒充（面具）</td><td>可能在假扮成你认识或信任的人。</td><td>品牌冒充</td><td>显示名冒充、仿冒发件域名、仿冒本组织域名、冒充高管、品牌名放在子域、免费邮箱冒充机构、仿冒会话参与者、冒用参与者名字、同形发件域、花体显示名</td></tr>
-    <tr><td>施压诱导（警示气泡）</td><td>似乎在用压力或不寻常的要求催促你。</td><td>社会工程、异常请求</td><td>—</td></tr>
-    <tr><td>敲诈勒索（比特币）</td><td>似乎在以威胁手段逼你付款。</td><td>敲诈勒索</td><td>—</td></tr>
+    <tr><th>类型与图标</th><th>一句话说明（界面原文）</th><th>来自模型类别</th><th>来自静态检查</th></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17.586 11.414-5.93 5.93a1 1 0 0 1-8-8l3.137-3.137a.707.707 0 0 1 1.207.5V10"/><path d="M20.414 8.586 22 7"/><circle cx="19" cy="10" r="2"/></svg></span><span><b>钓鱼</b><small>图标：鱼钩</small></span></div></td><td>可能企图获取你的密码、银行卡或账号信息。</td><td>窃取凭据</td><td>显示地址不符、链接标成品牌却指向别处、仿冒域名、误导性域名、同形域名、登录页在无关域名/免费托管/公共存储、表单回显链接、冒充品牌且要求登录</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20v-9"/><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"/><path d="M14.12 3.88 16 2"/><path d="M21 21a4 4 0 0 0-3.81-4"/><path d="M21 5a4 4 0 0 1-3.55 3.97"/><path d="M22 13h-4"/><path d="M3 21a4 4 0 0 1 3.81-4"/><path d="M3 5a4 4 0 0 0 3.55 3.97"/><path d="M6 13H2"/><path d="m8 2 1.88 1.88"/><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"/></svg></span><span><b>恶意软件</b><small>图标：虫子</small></span></div></td><td>其中的附件或链接可能会感染你的设备。</td><td>恶意软件投递</td><td>可执行附件、伪装成单据的可执行文件、双扩展名、宏文档、网页附件、磁盘镜像、压缩包、文件名反向字符/隐藏字符、伪装成附件的链接、危险协议链接、本地文件链接</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span><span><b>付款诈骗</b><small>图标：钞票</small></span></div></td><td>似乎在要求你转账或更改收款信息。</td><td>付款诈骗、商务邮件欺诈</td><td>组织外个人邮箱提出的转账/付款请求</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg></span><span><b>礼品卡诈骗</b><small>图标：礼物</small></span></div></td><td>似乎在要求你购买礼品卡并发送卡密。</td><td>礼品卡诈骗</td><td>—</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11c-1.5 0-2.5.5-3 2"/><path d="M4 6a2 2 0 0 0-2 2v4a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V8a2 2 0 0 0-2-2h-3a8 8 0 0 0-5 2 8 8 0 0 0-5-2z"/><path d="M6 11c1.5 0 2.5.5 3 2"/></svg></span><span><b>冒充</b><small>图标：面具</small></span></div></td><td>可能在假扮成你认识或信任的人。</td><td>品牌冒充</td><td>显示名冒充、仿冒发件域名、仿冒本组织域名、冒充高管、品牌名放在子域、免费邮箱冒充机构、仿冒会话参与者、冒用参与者名字、同形发件域、花体显示名</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M12 15h.01"/><path d="M12 7v4"/></svg></span><span><b>施压诱导</b><small>图标：警示气泡</small></span></div></td><td>似乎在用压力或不寻常的要求催促你。</td><td>社会工程、异常请求</td><td>—</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg></span><span><b>敲诈勒索</b><small>图标：比特币</small></span></div></td><td>似乎在以威胁手段逼你付款。</td><td>敲诈勒索</td><td>—</td></tr>
   </table></div>
   <ul>
     <li><b>主类型怎么选：</b>带载荷的类型（恶意软件、钓鱼、付款、礼品卡、勒索）优先于冒充和施压；模型类别（终审前用 Jev 的，终审后用终审的）权重最高，模型没给出类型时才用静态检查推断。其余类型显示在面板「另外：…」里，最多 2 个。</li>
