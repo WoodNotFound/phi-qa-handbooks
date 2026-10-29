@@ -150,7 +150,7 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
   <div class="eyebrow">Kensington · 邮件防护 · QA</div>
   <h1>邮件防护 QA 手册</h1>
   <p class="lede">用户在网页邮箱里打开一封邮件时，Phi 浏览器内置的 Kensington 扩展会判断这封邮件的安全等级，并在主题旁边显示一个标志。这份手册讲清楚它读了什么、按什么顺序检测、每一步用什么规则和模型、页面上的标志在什么情况下怎么变，以及每一项应该怎么测、怎样算通过。</p>
-  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>69340028a</code>）逐条核对，以代码为准；10-27 补充了「支持的版式」和「什么时候会多重检测」里重复检查的几行（依据提交 <code>76a1a500d</code>）。</p>
+  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>69340028a</code>）逐条核对，以代码为准；10-27 补充了「支持的版式」和「什么时候会多重检测」里重复检查的几行（依据提交 <code>76a1a500d</code>）；10-29 按新设计稿更新了第 8、9 节的徽章、横幅、面板顶部和威胁图标，第 12 节加了使用统计（依据提交 <code>7c8b47c90</code>）。</p>
   <div class="facts">
     <div class="fact"><b>3</b><span>支持的网页邮箱：Gmail、Outlook、Yahoo Mail</span></div>
     <div class="fact"><b>3 层</b><span>静态检查 → Jev 快速检查 → 终审</span></div>
