@@ -216,12 +216,12 @@ flowchart TD
   <h3>「为什么？」卡片</h3>
   <ul>
     <li><b>头部：</b>60px 淡色圆底里是这封邮件的威胁类型图标，与邮件面板同一套（钓鱼：鱼钩，恶意软件：虫子，付款诈骗：钞票，礼品卡：礼物，冒充：面具，施压诱导：闹钟，敲诈勒索：递钱的手；没有具体类型时是带 × 的盾牌）。旁边是标题「高风险网站」或「可疑网站」和一句说明，右上角是 ×。邮件是高风险、或落地页检查判为 dangerous 时用高风险（红 <code>#932121</code>），否则用可疑（橙 <code>#D85A31</code>）。</li>
-    <li><b>小标题：</b>「此网站可能有风险的原因 · Phi AI」。</li>
-    <li><b>来源：</b>英文界面为「Opened from: "邮件标题"」；中文等语言暂为旧句「你是从一封 Phi 高度怀疑的邮件来到这里的：“邮件标题”」，待翻译更新。</li>
-    <li><b>原因（落地页检查回来后）：</b>页面冒充的机构加真实域名（「看起来像 PayPal，但实际网站是 <code>paypa1-secure-login.com</code>」，域名用等宽粗体）；页面要你填什么（「此页面要求你提供密码和银行卡信息」，卡号、安全码、有效期合并成一项）；Phi AI 自己的理由，每条一行。三类都只写风险，不写「页面没做什么」或「为什么可能无害」。检查判为 unrelated（不是这封邮件的骗局页）时，这些都不显示。</li>
-    <li><b>等待和失败：</b>检查回来之前原因区写「正在由 Phi AI 检查…」；检查失败写「Phi AI 未能检查此页面。」。</li>
+    <li><b>小标题：</b>「这个网站为什么可能有风险 · Phi AI」。</li>
+    <li><b>来源：</b>「从这封邮件打开：「邮件标题」」（英文界面为「Opened from: "邮件标题"」）。</li>
+    <li><b>原因（落地页检查回来后）：</b>页面冒充的机构加真实域名（「看起来像 PayPal，但真实网站是 <code>paypa1-secure-login.com</code>」，域名用等宽粗体）；页面要你填什么（「这个页面要求你提供密码和银行卡信息」，卡号、安全码、有效期合并成一项）；Phi AI 自己的理由，每条一行。三类都只写风险，不写「页面没做什么」或「为什么可能无害」。检查判为 unrelated（不是这封邮件的骗局页）时，这些都不显示。</li>
+    <li><b>等待和失败：</b>检查回来之前原因区写「正在由 Phi AI 检查…」；检查失败写「Phi AI 无法检查这个页面。」。</li>
     <li><b>邮件总结：</b>终审写的邮件总结，超过 3 行折叠，「展开 / 收起」时高度平滑变化。没有终审总结时整段不显示，也不留空白。</li>
-    <li><b>底部：</b>「Phi AI 也可能出错。在付款、登录或提供个人信息之前，请花一分钟通过其他方式核实。」</li>
+    <li><b>底部：</b>「Phi AI 也可能判断失误。在付款、登录或提供个人信息之前，请花一分钟通过其他方式再确认一下。」</li>
     <li><b>动画与关闭：</b>打开时从「为什么？」下方轻微放大淡入，关闭时淡出。点 ×、按 Esc、点横条和卡片以外的任何地方都会关闭；点卡片里面不会。系统开启「减少动态效果」时直接出现、消失。卡片跟随系统深浅色。</li>
     <li>设计稿里还有设置齿轮、「查看邮件」、发件人名字、域名注册时间、建议框和「这个网站是安全的，报告误判」，目前没有数据或通道，没有做。</li>
   </ul>
@@ -289,7 +289,7 @@ flowchart TD
   <h2>测试指南与清单</h2>
   <h3>环境准备</h3>
   <ol>
-    <li>Phi Canary（带本分支的 Kensington），已登录 Phi 账号；phi-agent 为本分支（带 <code>/api/v1/mail/landing-check</code>）。目前发布的 Canary phi-agent（2026.10.28.1717）还没有这个接口，「为什么？」卡片会显示「Phi AI 未能检查此页面。」，测 LG-34、LG-38 前要换成本分支的 phi-agent。</li>
+    <li>Phi Canary（带本分支的 Kensington），已登录 Phi 账号；phi-agent 为本分支（带 <code>/api/v1/mail/landing-check</code>）。目前发布的 Canary phi-agent（2026.10.28.1717）还没有这个接口，「为什么？」卡片会显示「Phi AI 无法检查这个页面。」，测 LG-34、LG-38 前要换成本分支的 phi-agent。</li>
     <li>换上新的 Kensington 后如果行为还是旧的（例如「离开网站」没反应、卡片标题不对），是 Canary 还在跑缓存的旧后台：需要注销扩展的 service worker 再重启 Canary。</li>
     <li>Gmail 里一封会被判为高风险的钓鱼邮件，一封只会判为需留意的邮件，一封正常邮件。</li>
     <li>测试用钓鱼站：真实钓鱼站常有 Cloudflare 人机验证，测试脚本无法通过，所以用本机仿钓鱼站（<code>*.localhost</code> 域名，浏览器自动解析到本机，不改 hosts），页面只用虚构品牌。</li>
@@ -309,7 +309,7 @@ flowchart TD
   <div id="checklist"></div>
 </section>
 
-<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>7c8b47c90</code>（2026-10-29，PR #660）。代码位置：扩展 <code>ai-extension/kensington/src/background/landing/</code>、<code>ai-extension/kensington/src/mail-guard/landing/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>（<code>landing-route.ts</code>），说明 <code>docs/kensington-mail-guard.md</code>「Pages a risky email leads to」一节。</footer>
+<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>7c8b47c90</code>（2026-10-29，PR #660）；中文界面文字以 10-29 的正式翻译为准（PR #664）。代码位置：扩展 <code>ai-extension/kensington/src/background/landing/</code>、<code>ai-extension/kensington/src/mail-guard/landing/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>（<code>landing-route.ts</code>），说明 <code>docs/kensington-mail-guard.md</code>「Pages a risky email leads to」一节。</footer>
 </main>
 </div>
 
@@ -333,7 +333,7 @@ flowchart TD
   ["提示条", "LG-31", "在钓鱼站内点链接跳到同站另一页（包括「隐藏」之后）", "新页面上提示条又出现"],
   ["提示条", "LG-32", "在同一标签页的地址栏自己输入一个无关网址（如 example.com）", "提示条消失，之后不再提示"],
   ["提示条", "LG-33", "真实危险邮件的落地站（有 Cloudflare 验证）", "验证页上已有提示条"],
-  ["提示条", "LG-34", "打开提示条的「为什么？」后等几秒", "卡片里先是「正在由 Phi AI 检查…」，几秒后换成原因：冒充对象加真实网站、页面要你填什么、Phi AI 的理由（只写风险）；Phi AI 不可用时写「Phi AI 未能检查此页面。」"],
+  ["提示条", "LG-34", "打开提示条的「为什么？」后等几秒", "卡片里先是「正在由 Phi AI 检查…」，几秒后换成原因：冒充对象加真实网站、页面要你填什么、Phi AI 的理由（只写风险）；Phi AI 不可用时写「Phi AI 无法检查这个页面。」"],
   ["提示条", "LG-35", "页面里的 iframe（例如嵌入的另一个域名的表单）", "只有顶层页面一条提示条，iframe 里没有"],
   ["提示条", "LG-36", "从 Gmail 点开高风险邮件的链接（新标签页），点「离开网站」", "这个标签页关闭，回到 Gmail；再访问同一链接仍有提示条"],
   ["提示条", "LG-37", "在已有浏览记录的同一个标签页里粘贴可疑链接打开，点「离开网站」", "后退到上一页，上一页没有提示条"],

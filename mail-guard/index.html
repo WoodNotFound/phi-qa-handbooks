@@ -156,7 +156,7 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
   <div class="eyebrow">Kensington · 邮件防护 · QA</div>
   <h1>邮件防护 QA 手册</h1>
   <p class="lede">用户在网页邮箱里打开一封邮件时，Phi 浏览器内置的 Kensington 扩展会判断这封邮件的安全等级，并在主题旁边显示一个标志。这份手册讲清楚它读了什么、按什么顺序检测、每一步用什么规则和模型、页面上的标志在什么情况下怎么变，以及每一项应该怎么测、怎样算通过。</p>
-  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>69340028a</code>）逐条核对，以代码为准；10-27 补充了「支持的版式」和「什么时候会多重检测」里重复检查的几行（依据提交 <code>76a1a500d</code>）；10-29 按新设计稿更新了第 8、9 节的徽章、横幅、面板顶部和威胁图标，第 12 节加了使用统计（依据提交 <code>7c8b47c90</code>）。</p>
+  <p class="tag">依据 <code>feature/kensington-mail-guard</code> 分支 2026-10-26 的代码（提交 <code>69340028a</code>）逐条核对，以代码为准；10-27 补充了「支持的版式」和「什么时候会多重检测」里重复检查的几行（依据提交 <code>76a1a500d</code>）；10-29 按新设计稿更新了第 8、9 节的徽章、横幅、面板顶部和威胁图标，第 12 节加了使用统计（依据提交 <code>7c8b47c90</code>），中文界面文字以 10-29 的正式翻译为准（PR #664）。</p>
   <div class="facts">
     <div class="fact"><b>3</b><span>支持的网页邮箱：Gmail、Outlook、Yahoo Mail</span></div>
     <div class="fact"><b>3 层</b><span>静态检查 → Jev 快速检查 → 终审</span></div>
@@ -184,7 +184,7 @@ flowchart TD
   E --> F["静态检查用 Jev 的读数再跑一遍（不再调用模型）<br/>合成等级 = max(静态检查保底, Jev 等级)"]
   F --> G{"等级是低风险？"}
   G -- 是 --> L["低风险（可能带「营销邮件」标签）"]
-  G -- 否 --> H["第 3 层：终审（DeepSeek）<br/>徽章：可能有风险 / 可能可疑"]
+  G -- 否 --> H["第 3 层：终审（DeepSeek）<br/>徽章：可能需留意 / 可能可疑"]
   H --> R["终审结果替换 Jev 的读数<br/>显示最终等级 + 横幅"]
   </pre></div>
   <div class="grid2">
@@ -268,7 +268,7 @@ sequenceDiagram
   alt 等级为低风险
     P-->>U: 低风险
   else 需留意及以上
-    P-->>U: 可能有风险 / 可能可疑（转圈）
+    P-->>U: 可能需留意 / 可能可疑（转圈）
     P->>B: 终审请求（完整内容）
     B->>A: /api/v1/mail/phishing-review（超时 28 秒）
     A->>D: 终审（25 秒内，答非所问会重问 1 次）
@@ -285,7 +285,7 @@ sequenceDiagram
     <li><b>信任的发件人？</b>发件人在信任名单里时，先等认证结果：证明确实是他 → 只显示静态检查的等级，<b>不调用 Phi AI</b>，面板写「你信任这个发件人，所以没有请 Phi AI 检查」；没能证明 → 当普通邮件继续检查。</li>
     <li><b>第 2 层：Jev 快速检查。</b>每封邮件都调用。等待期间徽章是灰色的 <span class="pill p-unread"><svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>检查中</span>（静态检查已判高风险时除外）。Jev 没回答或回答不完整 → 「Phi AI 不可用」：静态检查结果为低风险时显示 <span class="pill p-unread">未检查</span>，否则显示静态检查的等级，面板写「Phi AI 无法检查这封邮件，这只是静态检查的结果」。</li>
     <li><b>再跑一遍静态检查。</b>有 8 项静态检查需要 Jev 的读数才能下结论（第 5 节末），这一步带上读数重算，不再调用模型。然后按第 4 节合成等级。</li>
-    <li><b>第 3 层：终审。</b>只要等级不是低风险就触发。等待期间徽章显示「可能 + Jev 的等级」并转圈，例如 <span class="pill p-caution"><svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能有风险</span>。终审结果取代 Jev 的读数，徽章变成最终等级，横幅出现。</li>
+    <li><b>第 3 层：终审。</b>只要等级不是低风险就触发。等待期间徽章显示「可能 + Jev 的等级」并转圈，例如 <span class="pill p-caution"><svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能需留意</span>。终审结果取代 Jev 的读数，徽章变成最终等级，横幅出现。</li>
   </ol>
 
   <h3>什么时候会多重检测</h3>
@@ -527,7 +527,7 @@ flowchart LR
   <div class="tablebox states"><table>
     <tr><th>样子</th><th>什么时候</th></tr>
     <tr><td><span class="pill p-checking"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>检查中</span></td><td>等 Jev 回答（通常不到 2 秒）。灰色虚线框，转圈。静态检查已判高风险时不出现这一步</td></tr>
-    <tr><td><span class="pill p-might-caution"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能有风险</span> <span class="pill p-might-suspicious"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能可疑</span></td><td>终审进行中，转圈。浅沙色 = Jev 判需留意，橙色 = Jev 判可疑。静态检查已判高风险时直接显示「高风险」（盾牌不转圈）</td></tr>
+    <tr><td><span class="pill p-might-caution"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能需留意</span> <span class="pill p-might-suspicious"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能可疑</span></td><td>终审进行中，转圈。浅沙色 = Jev 判需留意，橙色 = Jev 判可疑。静态检查已判高风险时直接显示「高风险」（盾牌不转圈）</td></tr>
     <tr><td><span class="pill p-low"><svg class="i14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>低风险</span></td><td>最终结果低风险；或广告邮件（面板另有「营销邮件」标签）；或信任且已验证的发件人</td></tr>
     <tr><td><span class="pill p-caution"><svg class="i14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>需留意</span></td><td>最终结果需留意。黄色渐变，眼睛图标</td></tr>
     <tr><td><span class="pill p-suspicious"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>可疑</span></td><td>最终结果可疑。橙红渐变，圆圈感叹号</td></tr>
@@ -536,14 +536,14 @@ flowchart LR
     <tr><td><span class="pill p-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 20 20"/><path d="M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71"/><path d="M9.309 3.652A12.252 12.252 0 0 0 11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7a9.784 9.784 0 0 1-.08 1.264"/></svg></span></td><td>用户关闭了检查；圆形按钮，悬停变浅灰底，点它打开设置</td></tr>
     <tr><td>（什么都没有）</td><td>在 Phi 设置中关闭了邮件防护：不显示徽章、横幅、面板，也不发起任何检查</td></tr>
   </table></div>
-  <p class="tag">外观来自 2026-10-29 的设计稿：等级胶囊至少 101px 宽，图标和文字居中，名字较长时随文字变宽。<b>名称：</b>英文界面已改为 Attention / Might need attention / Might be suspicious；中文等其他语言要等下一次翻译更新，目前仍是「需留意 / 可能有风险 / 可能可疑」。</p>
+  <p class="tag">外观来自 2026-10-29 的设计稿：等级胶囊至少 101px 宽，图标和文字居中，名字较长时随文字变宽。<b>名称：</b>英文界面为 Attention / Might need attention / Might be suspicious；中文正式译文为「需留意 / 可能需留意 / 可能可疑」（2026-10-29 的翻译，PR #664 合并后生效；之前的版本显示「可能有风险」）。</p>
   <p class="tag">用户关闭「低风险邮件也显示徽章」后：低风险邮件和「检查中」阶段不显示徽章；需留意及以上、「未检查」、灰色盾牌照常显示。</p>
   <div class="diagram"><pre class="mermaid">
 stateDiagram-v2
   state "未检查" as NC
   state "灰色盾牌（已关闭）" as OFF
   state "检查中" as CHK
-  state "可能有风险（终审中）" as MC
+  state "可能需留意（终审中）" as MC
   state "可能可疑（终审中）" as MS
   state "低风险" as LOW
   state "需留意" as CAU
@@ -796,7 +796,7 @@ stateDiagram-v2
     ["读取", "发件人或正文确实读不到时显示「未检查」", "面板列出缺少的部分，并写「这并不代表它是安全的」"],
     ["读取", "多封对话只检查最新一封别人发来的", "面板显示「已检查最新一封邮件，发件人：XXX」"],
     ["顺序", "普通正常邮件：检查中 → 低风险，不出现横幅", "约 1–2 秒出结果"],
-    ["顺序", "Jev 判为需留意/可疑：先显示「可能有风险/可能可疑」并转圈，终审后变为最终等级", "终审期间不出现横幅，结束后出现"],
+    ["顺序", "Jev 判为需留意/可疑：先显示「可能需留意/可能可疑」并转圈，终审后变为最终等级", "终审期间不出现横幅，结束后出现"],
     ["顺序", "静态检查有严重发现（如 IP 地址链接、双扩展名附件）：立刻显示高风险", "不经过「检查中」；终审结论 legitimate 也不会降级"],
     ["顺序", "广告/促销邮件：低风险 + 「营销邮件」标签，不终审", "不出现横幅"],
     ["顺序", "断网或 Phi AI 不可用：静态检查为低时显示「未检查」，否则显示静态检查的等级", "面板写「Phi AI 无法检查这封邮件…」"],
@@ -838,11 +838,11 @@ stateDiagram-v2
     ["关于", "切换浏览器界面语言后关于页文字随之变化", "各语言都有，「检查已打开的邮件」的名称与设置页一致"],
     ["开关", "关闭检查后只剩灰色盾牌，点它打开设置；重新开启后恢复检查", "设置说明写「关闭后，主题旁会保留一个灰色盾牌」；关闭期间不发送任何请求"],
     ["类型", "以曝光私密影像或资料相威胁、要求付款的勒索邮件", "可疑或高风险，标题为「疑似敲诈勒索」，面板顶部是递钱的手图标"],
-    ["外观", "对照第 9 节的徽章表，依次看检查中、可能有风险、可能可疑、低风险、需留意、可疑、高风险、未检查、关闭", "颜色、图标、虚线/实线框与表中一致；各等级胶囊宽度一致，图标和文字居中；关闭时是圆形按钮，悬停变浅灰底"],
+    ["外观", "对照第 9 节的徽章表，依次看检查中、可能需留意、可能可疑、低风险、需留意、可疑、高风险、未检查、关闭", "颜色、图标、虚线/实线框与表中一致；各等级胶囊宽度一致，图标和文字居中；关闭时是圆形按钮，悬停变浅灰底"],
     ["外观", "需留意、可疑、高风险邮件的横幅", "渐变底白字；左侧淡化的 Phi 螺旋，右下角分别是眼睛、圆圈感叹号、带 × 的盾牌；「查看详情」半透明白边"],
     ["外观", "打开面板（高风险钓鱼、可疑、需留意、检查中各一封），浅色和深色主题各看一次", "顶部白底、没有整条色带；60px 淡色圆底里是威胁图标；圆底和标题颜色随等级；深色下同样看得清"],
     ["外观", "施压诱导类邮件（催促、限时）的面板", "顶部图标是闹钟；没有具体威胁类型的可疑或高风险邮件是带 × 的盾牌"],
-    ["语言", "英文界面下打开需留意、以及终审进行中的邮件", "徽章显示 Attention、Might need attention、Might be suspicious；中文等语言暂为旧名，待翻译更新"],
+    ["语言", "分别在英文和中文界面下打开需留意、以及终审进行中的邮件", "英文徽章为 Attention、Might need attention、Might be suspicious；中文为需留意、可能需留意、可能可疑"],
     ["语言", "切换浏览器界面语言（简繁中日韩德西法荷英）后界面文字随之变化", "终审总结也用该语言；没有任何地方出现「已确认」这类绝对说法"],
     ["隐私", "（开发/canary）在 Langfuse 查看一次快速检查请求，只含域名而非完整地址", "终审请求才含完整发件人地址和正文"],
     ["版式", "Gmail 切到垂直分割、水平分割，在阅读窗格里依次点几封邮件", "每封都出现徽章并随邮件更新，网址停在 #inbox 也一样"],
