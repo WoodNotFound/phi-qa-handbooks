@@ -72,20 +72,29 @@ td.nowrap { white-space: nowrap; }
 .diagram pre.mermaid { margin: 0; background: transparent; text-align: center; }
 .cap { font-size: 13px; color: var(--ink-faint); margin-top: 6px; }
 /* Replica of the extension's badge: 18px pill, 12px type, the same level colours. */
-.pill { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 9px 0 7px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap; border: 1px solid transparent; vertical-align: middle; }
-.pill svg { width: 12px; height: 12px; flex: none; }
+.pill { display: inline-flex; align-items: center; justify-content: center; gap: 5px; box-sizing: border-box; height: 18px; padding: 0 5px 0 4px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 16px; white-space: nowrap; border: 1px solid transparent; vertical-align: middle; }
+.pill svg { width: 11px; height: 11px; flex: none; stroke-width: 3; }
+.pill svg.i14 { width: 14px; height: 14px; stroke-width: 2.4; }
+.pill svg.i15 { width: 15px; height: 15px; stroke-width: 2.4; }
+.states .pill { min-width: 101px; }
 td.threat { white-space: nowrap; }
 td.threat .tcell { display: flex; align-items: center; gap: 10px; }
-td.threat .ticon { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 9px; background: var(--high); color: var(--on-solid); }
+td.threat .ticon { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 50%; background: rgba(147, 33, 33, 0.1); color: #932121; }
 td.threat .ticon svg { width: 20px; height: 20px; }
 td.threat b { display: block; line-height: 1.3; }
 td.threat small { display: block; font-size: 12px; line-height: 1.3; color: var(--ink-faint); }
 .p-low { background: var(--low-bg); color: var(--low-fg); }
-.p-caution { background: var(--caution-bg); color: var(--caution-fg); }
-.p-suspicious { background: var(--suspicious); color: var(--on-solid); }
-.p-high { background: var(--high); color: var(--on-solid); }
-.p-unread { background: transparent; color: var(--ink-soft); border: 1px dashed var(--unread); }
-.p-off { background: transparent; color: var(--ink-soft); border: 1px solid var(--rule); padding: 0 6px; }
+.p-caution { background: linear-gradient(90deg, #f9a200, #fcd875); color: #ffffff; }
+.p-suspicious { background: linear-gradient(90deg, #cf552e, #bd2806); color: #ffffff; }
+.p-high { background: linear-gradient(90deg, #992a2a, #932121); color: #ffffff; }
+.p-unread { background: transparent; color: #636366; border: 1px solid #636366; }
+.p-checking { background: transparent; color: rgba(99, 99, 102, 0.8); border: 1px dashed #636366; }
+.p-might-caution { background: #faeeda; color: rgba(99, 99, 102, 0.8); }
+.p-might-suspicious { background: #d85a31; color: #ffffff; }
+.p-off { width: 22px; min-width: 0 !important; height: 22px; padding: 0; border-radius: 50%; background: transparent; color: #636366; border: 1px solid #636366; }
+.p-off svg { width: 16px; height: 16px; stroke-width: 2.4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .p-unread, :root:not([data-theme="light"]) .p-checking, :root:not([data-theme="light"]) .p-off { color: #9aa0a6; border-color: #9aa0a6; } }
+:root[data-theme="dark"] .p-unread, :root[data-theme="dark"] .p-checking, :root[data-theme="dark"] .p-off { color: #9aa0a6; border-color: #9aa0a6; }
 .spin { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
@@ -487,7 +496,7 @@ flowchart LR
 <section class="s" id="threats">
   <div class="num">8</div>
   <h2>能识别的危险类型</h2>
-  <p class="kicker">等级为可疑或高风险时，标题和横幅会写出威胁类型，例如「高风险 · 疑似钓鱼」，并用该类型的图标。</p>
+  <p class="kicker">等级为可疑或高风险时，标题和横幅会写出威胁类型，例如「高风险 · 疑似钓鱼」，面板顶部用该类型的图标；没有具体类型时用带 × 的盾牌。图标来自 2026-10-29 的设计稿，落地页的「为什么？」卡片用同一套。</p>
   <div class="tablebox"><table>
     <tr><th>类型与图标</th><th>一句话说明（界面原文）</th><th>来自模型类别</th><th>来自静态检查</th></tr>
     <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17.586 11.414-5.93 5.93a1 1 0 0 1-8-8l3.137-3.137a.707.707 0 0 1 1.207.5V10"/><path d="M20.414 8.586 22 7"/><circle cx="19" cy="10" r="2"/></svg></span><span><b>钓鱼</b><small>图标：鱼钩</small></span></div></td><td>可能企图获取你的密码、银行卡或账号信息。</td><td>窃取凭据</td><td>显示地址不符、链接标成品牌却指向别处、仿冒域名、误导性域名、同形域名、登录页在无关域名/免费托管/公共存储、表单回显链接、冒充品牌且要求登录</td></tr>
@@ -495,8 +504,8 @@ flowchart LR
     <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span><span><b>付款诈骗</b><small>图标：钞票</small></span></div></td><td>似乎在要求你转账或更改收款信息。</td><td>付款诈骗、商务邮件欺诈</td><td>组织外个人邮箱提出的转账/付款请求</td></tr>
     <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg></span><span><b>礼品卡诈骗</b><small>图标：礼物</small></span></div></td><td>似乎在要求你购买礼品卡并发送卡密。</td><td>礼品卡诈骗</td><td>—</td></tr>
     <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11c-1.5 0-2.5.5-3 2"/><path d="M4 6a2 2 0 0 0-2 2v4a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V8a2 2 0 0 0-2-2h-3a8 8 0 0 0-5 2 8 8 0 0 0-5-2z"/><path d="M6 11c1.5 0 2.5.5 3 2"/></svg></span><span><b>冒充</b><small>图标：面具</small></span></div></td><td>可能在假扮成你认识或信任的人。</td><td>品牌冒充</td><td>显示名冒充、仿冒发件域名、仿冒本组织域名、冒充高管、品牌名放在子域、免费邮箱冒充机构、仿冒会话参与者、冒用参与者名字、同形发件域、花体显示名</td></tr>
-    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M12 15h.01"/><path d="M12 7v4"/></svg></span><span><b>施压诱导</b><small>图标：警示气泡</small></span></div></td><td>似乎在用压力或不寻常的要求催促你。</td><td>社会工程、异常请求</td><td>—</td></tr>
-    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg></span><span><b>敲诈勒索</b><small>图标：比特币</small></span></div></td><td>似乎在以威胁手段逼你付款。</td><td>敲诈勒索</td><td>—</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/></svg></span><span><b>施压诱导</b><small>图标：闹钟</small></span></div></td><td>似乎在用压力或不寻常的要求催促你。</td><td>社会工程、异常请求</td><td>—</td></tr>
+    <tr><td class="threat"><div class="tcell"><span class="ticon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></svg></span><span><b>敲诈勒索</b><small>图标：递钱的手</small></span></div></td><td>似乎在以威胁手段逼你付款。</td><td>敲诈勒索</td><td>—</td></tr>
   </table></div>
   <ul>
     <li><b>主类型怎么选：</b>带载荷的类型（恶意软件、钓鱼、付款、礼品卡、勒索）优先于冒充和施压；模型类别（终审前用 Jev 的，终审后用终审的）权重最高，模型没给出类型时才用静态检查推断。其余类型显示在面板「另外：…」里，最多 2 个。</li>
@@ -509,18 +518,19 @@ flowchart LR
   <h2>页面上的标志怎么变化</h2>
   <p class="kicker">三样东西：主题旁的<b>徽章</b>、主题下方的<b>横幅</b>、点徽章打开的<b>面板</b>。另外，有问题的链接会被<b>红框</b>标出。</p>
   <h3>徽章的所有状态</h3>
-  <div class="tablebox"><table>
+  <div class="tablebox states"><table>
     <tr><th>样子</th><th>什么时候</th></tr>
-    <tr><td><span class="pill p-unread"><svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>检查中</span></td><td>等 Jev 回答（通常不到 2 秒）。静态检查已判高风险时不出现这一步</td></tr>
-    <tr><td><span class="pill p-caution"><svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能有风险</span> <span class="pill p-suspicious"><svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能可疑</span></td><td>终审进行中，颜色是 Jev 合成的等级（需留意 / 可疑）。静态检查已判高风险时直接显示「高风险」</td></tr>
-    <tr><td><span class="pill p-low">低风险</span></td><td>最终结果低风险；或广告邮件（面板另有「营销邮件」标签）；或信任且已验证的发件人</td></tr>
-    <tr><td><span class="pill p-caution">需留意</span></td><td>最终结果需留意</td></tr>
-    <tr><td><span class="pill p-suspicious">可疑</span></td><td>最终结果可疑</td></tr>
-    <tr><td><span class="pill p-high">高风险</span></td><td>最终结果高风险；或静态检查有严重发现（立刻显示）</td></tr>
-    <tr><td><span class="pill p-unread">未检查</span></td><td>发件人/主题/正文读不全；或 Phi AI 不可用且静态检查是低风险。<b>从不用低风险代替</b></td></tr>
-    <tr><td><span class="pill p-off">◯</span>（灰色盾牌）</td><td>用户关闭了检查；点它打开设置</td></tr>
+    <tr><td><span class="pill p-checking"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>检查中</span></td><td>等 Jev 回答（通常不到 2 秒）。灰色虚线框，转圈。静态检查已判高风险时不出现这一步</td></tr>
+    <tr><td><span class="pill p-might-caution"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能有风险</span> <span class="pill p-might-suspicious"><svg class="spin i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>可能可疑</span></td><td>终审进行中，转圈。浅沙色 = Jev 判需留意，橙色 = Jev 判可疑。静态检查已判高风险时直接显示「高风险」（盾牌不转圈）</td></tr>
+    <tr><td><span class="pill p-low"><svg class="i14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>低风险</span></td><td>最终结果低风险；或广告邮件（面板另有「营销邮件」标签）；或信任且已验证的发件人</td></tr>
+    <tr><td><span class="pill p-caution"><svg class="i14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>需留意</span></td><td>最终结果需留意。黄色渐变，眼睛图标</td></tr>
+    <tr><td><span class="pill p-suspicious"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>可疑</span></td><td>最终结果可疑。橙红渐变，圆圈感叹号</td></tr>
+    <tr><td><span class="pill p-high"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m14.5 9.5-5 5"/><path d="m9.5 9.5 5 5"/></svg>高风险</span></td><td>最终结果高风险；或静态检查有严重发现（立刻显示）。红色渐变，带 × 的盾牌</td></tr>
+    <tr><td><span class="pill p-unread"><svg class="i15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>未检查</span></td><td>发件人/主题/正文读不全；或 Phi AI 不可用且静态检查是低风险。灰色实线框。<b>从不用低风险代替</b></td></tr>
+    <tr><td><span class="pill p-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 2 20 20"/><path d="M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71"/><path d="M9.309 3.652A12.252 12.252 0 0 0 11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7a9.784 9.784 0 0 1-.08 1.264"/></svg></span></td><td>用户关闭了检查；圆形按钮，悬停变浅灰底，点它打开设置</td></tr>
     <tr><td>（什么都没有）</td><td>在 Phi 设置中关闭了邮件防护：不显示徽章、横幅、面板，也不发起任何检查</td></tr>
   </table></div>
+  <p class="tag">外观来自 2026-10-29 的设计稿：等级胶囊至少 101px 宽，图标和文字居中，名字较长时随文字变宽。<b>名称：</b>英文界面已改为 Attention / Might need attention / Might be suspicious；中文等其他语言要等下一次翻译更新，目前仍是「需留意 / 可能有风险 / 可能可疑」。</p>
   <p class="tag">用户关闭「低风险邮件也显示徽章」后：低风险邮件和「检查中」阶段不显示徽章；需留意及以上、「未检查」、灰色盾牌照常显示。</p>
   <div class="diagram"><pre class="mermaid">
 stateDiagram-v2
@@ -554,11 +564,12 @@ stateDiagram-v2
     <li><b>只在终审结束（或失败）后出现</b>，而且最终等级不是低风险。终审进行中不出现，避免「先出现再消失」的闪动。</li>
     <li>放在主题这一行的下方。Outlook 的主题和工具栏在同一行，横幅放在整行的下方。</li>
     <li>内容：等级（可疑/高风险时带威胁类型）+ 一句话 + 「查看详情」+ 关闭（×）。</li>
+    <li><b>样式（2026-10-29 设计稿）：</b>需留意为黄色渐变、可疑为橙红渐变、高风险为红色渐变，白字，标题加粗；左侧是淡化的 Phi 螺旋标志，右下角压一个等级图标（需留意：眼睛；可疑：圆圈感叹号；高风险：带 × 的盾牌）；「查看详情」是半透明白边按钮。</li>
     <li>点 × 后，这封邮件的横幅在本页面不再出现（刷新页面后恢复）。</li>
   </ul>
   <h3>面板（点徽章打开）</h3>
   <ul>
-    <li><b>顶部：</b>等级颜色、图标（威胁类型或等级图标）、标题、一句话；广告邮件显示「营销邮件」标签；右侧是设置（齿轮）和关闭。</li>
+    <li><b>顶部（2026-10-29 起与落地页「为什么？」卡片同款）：</b>白底，下面一条分隔线，不再有整条色带。左侧 60px 淡色圆底里是威胁类型图标（第 8 节；没有类型时高风险、可疑为带 × 的盾牌，需留意为三角警告，低风险为带勾的盾牌，检查中/未检查为灰色盾牌）；圆底和标题的颜色随等级（高风险红 #932121、可疑橙 #D85A31、需留意琥珀、低风险绿、检查中/未检查灰）；标题 18px 半粗，下面一句话 13px；广告邮件显示「营销邮件」标签；右侧是设置（齿轮）和关闭。</li>
     <li><b>Phi AI 部分：</b>
       <ul>
         <li>终审进行中：「这封邮件为什么可能有风险 · Phi AI」加占位动画；</li>
@@ -661,6 +672,7 @@ stateDiagram-v2
     <li><b>从不发送：</b>收件人、邮件/会话 id、会话里的其他邮件、附件内容。邮件里的任何东西都不会被打开或加载。</li>
     <li><b>认证结果读取</b>只在浏览器里进行，不离开浏览器。Outlook 的登录令牌只留在 Outlook 页面里，只发给 Outlook 自己。</li>
     <li>两类请求都在浏览器、扩展后台、phi-agent 三处各做一次大小和字段限制。</li>
+    <li><b>使用统计（PostHog）：</b>只发 Kensington 自己产生的值：邮箱（gmail / outlook / yahoo）、等级、威胁类型、终审结论、规则 id、次数和分段耗时；从不发发件人、主题、正文、域名、地址或网址。未开启增强遥测时只是不带属性的总数，开启后才带上这些属性。每封邮件的检查结果在一个标签页里只计一次。</li>
     <li>调用经 Sentinel AI 网关、用用户自己的令牌，和其他 AI 调用一样计费。dev / canary 环境会在 Langfuse 记录每次请求（<code>phi-agent.mail-guard</code> / <code>phi-agent.mail-review</code>）；正式版不记录。</li>
   </ul>
 </section>
@@ -724,7 +736,7 @@ stateDiagram-v2
   </table></div>
 </section>
 
-<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>69340028a</code>（2026-10-26）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
+<footer>依据 phi-ai <code>feature/kensington-mail-guard</code> @ <code>7c8b47c90</code>（2026-10-29，PR #660）。代码位置：扩展 <code>ai-extension/kensington/src/mail-guard/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>，设计说明 <code>docs/kensington-mail-guard.md</code>。</footer>
 </main>
 </div>
 
@@ -819,7 +831,12 @@ stateDiagram-v2
     ["关于", "关于页底部「隐私政策」", "在新标签页打开 https://phibrowser.com/privacy/"],
     ["关于", "切换浏览器界面语言后关于页文字随之变化", "各语言都有，「检查已打开的邮件」的名称与设置页一致"],
     ["开关", "关闭检查后只剩灰色盾牌，点它打开设置；重新开启后恢复检查", "设置说明写「关闭后，主题旁会保留一个灰色盾牌」；关闭期间不发送任何请求"],
-    ["类型", "以曝光私密影像或资料相威胁、要求付款的勒索邮件", "可疑或高风险，标题为「疑似敲诈勒索」（比特币图标）"],
+    ["类型", "以曝光私密影像或资料相威胁、要求付款的勒索邮件", "可疑或高风险，标题为「疑似敲诈勒索」，面板顶部是递钱的手图标"],
+    ["外观", "对照第 9 节的徽章表，依次看检查中、可能有风险、可能可疑、低风险、需留意、可疑、高风险、未检查、关闭", "颜色、图标、虚线/实线框与表中一致；各等级胶囊宽度一致，图标和文字居中；关闭时是圆形按钮，悬停变浅灰底"],
+    ["外观", "需留意、可疑、高风险邮件的横幅", "渐变底白字；左侧淡化的 Phi 螺旋，右下角分别是眼睛、圆圈感叹号、带 × 的盾牌；「查看详情」半透明白边"],
+    ["外观", "打开面板（高风险钓鱼、可疑、需留意、检查中各一封），浅色和深色主题各看一次", "顶部白底、没有整条色带；60px 淡色圆底里是威胁图标；圆底和标题颜色随等级；深色下同样看得清"],
+    ["外观", "施压诱导类邮件（催促、限时）的面板", "顶部图标是闹钟；没有具体威胁类型的可疑或高风险邮件是带 × 的盾牌"],
+    ["语言", "英文界面下打开需留意、以及终审进行中的邮件", "徽章显示 Attention、Might need attention、Might be suspicious；中文等语言暂为旧名，待翻译更新"],
     ["语言", "切换浏览器界面语言（简繁中日韩德西法荷英）后界面文字随之变化", "终审总结也用该语言；没有任何地方出现「已确认」这类绝对说法"],
     ["隐私", "（开发/canary）在 Langfuse 查看一次快速检查请求，只含域名而非完整地址", "终审请求才含完整发件人地址和正文"],
     ["版式", "Gmail 切到垂直分割、水平分割，在阅读窗格里依次点几封邮件", "每封都出现徽章并随邮件更新，网址停在 #inbox 也一样"],
