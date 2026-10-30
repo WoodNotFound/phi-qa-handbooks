@@ -1,0 +1,2258 @@
+{
+  "schemaVersion": 1,
+  "revision": "2026-10-30-r1",
+  "title": "标签页关闭操作手测指南",
+  "source": {
+    "branch": "feature/tab-close-improvements",
+    "base": "d390230615c172c3a3f94132e0b36ce081dac0be",
+    "workingDiffSha256": "6865cc137ce00f136bbf6ce303a7bbd2380a659dfb460b06b7e238948fc16d92",
+    "framework": "156.0.8078.52 / 8078.52",
+    "status": "本地未提交工作区；不等同于可直接 fetch 的完整功能提交"
+  },
+  "sections": [
+    {
+      "id": "ENV",
+      "title": "准备环境与判定口径",
+      "summary": "先确认收到的构建包含本批功能；手册发布不代表浏览器分支已发布。",
+      "cases": [
+        {
+          "id": "ENV-01",
+          "priority": "P0",
+          "title": "记录实际被测构建",
+          "pre": "已取得发包人提供的 Phi 安装包或本地构建。",
+          "steps": [
+            "填写页面上方的测试人、构建标识、macOS、Framework 版本和渠道。",
+            "在设置 → 高级确认第二张卡片包含两个关闭开关。"
+          ],
+          "expected": [
+            "能明确识别实际运行的 app；不是只记录分支名。",
+            "若找不到开关，先检查构建，不把旧版本行为记为功能失败。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": true,
+          "observed": [
+            "once"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "ENV-02",
+          "priority": "P0",
+          "title": "建立隔离测试空间",
+          "pre": "使用可丢弃的测试资料；正式页面、草稿和工作用 pin 已记录。",
+          "steps": [
+            "创建 TC-QA 测试 Space。",
+            "记录原来的布局、两个开关和快捷键配置。",
+            "确认当前窗口没有真实工作页面。"
+          ],
+          "expected": [
+            "普通关闭范围在当前测试 Space。",
+            "明确 pin 可能跨 Space 共用；只操作自己新建并带 TC- 前缀的 pin。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": true,
+          "observed": [
+            "once"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "ENV-03",
+          "priority": "P0",
+          "title": "建立稳定序列和记录基线",
+          "pre": "使用下面的测试页面生成器，同一 run 标识。",
+          "steps": [
+            "按 A、B、C、D、E、F 的顺序逐一打开，不用一次弹出多页。",
+            "若插入顺序不同，用原生拖动排成 A → F，等列表稳定。",
+            "每个用例前重新建立其指定序列，不沿用上一个用例的残留。"
+          ],
+          "expected": [
+            "页面标题能区分六个标签，A 位于最左／最上。",
+            "截图记录实际顺序；以界面顺序为基准，不以打开时间为基准。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": true,
+          "observed": [
+            "once"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "ENV-04",
+          "priority": "P1",
+          "title": "保护页面的存活证据",
+          "pre": "打开一个带输入框的普通测试页面。",
+          "steps": [
+            "输入不含真实信息的随机标记，记下“本次打开编号”。",
+            "切换标签后再切回来。"
+          ],
+          "expected": [
+            "标记和打开编号不变。",
+            "后续“保留 pin／书签页面”的用例以相同标记证明页面没被关闭后重新打开；只有保存项还在不够。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "SET",
+      "title": "两个独立开关",
+      "summary": "高级页第二张独立卡片，没有“标签页操作”标题。默认双击关闭为关，位置批量关闭为开。",
+      "cases": [
+        {
+          "id": "SET-01",
+          "priority": "P0",
+          "title": "第二张无标题设置卡片",
+          "pre": "打开设置 → 高级。",
+          "steps": [
+            "从顶部依次查看各卡片。",
+            "查看两个开关及说明，在小窗口里滚动检查。"
+          ],
+          "expected": [
+            "第一组是完整网址、预览和指示项，第二组仅含“双击关闭标签页”和“按位置批量关闭标签页”。",
+            "第二组没有额外标题；说明不截断，开关不被挤出。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": true,
+          "observed": [
+            "once"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SET-02",
+          "priority": "P1",
+          "title": "全新环境的默认值",
+          "pre": "使用从未设置过这两项偏好的独立测试环境；仅新建 Profile 不满足条件。",
+          "steps": [
+            "首次打开高级设置，不先改开关。",
+            "记录两个值。"
+          ],
+          "expected": [
+            "双击关闭默认关；按位置批量关闭默认开。",
+            "无干净环境时标记阻塞，不清除真实用户偏好冒充默认测试。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SET-03",
+          "priority": "P0",
+          "title": "关闭位置功能：普通菜单隐藏",
+          "pre": "普通序列 A/B/C；双击开关先保持原值。",
+          "steps": [
+            "关闭“按位置批量关闭标签页”。",
+            "关闭设置，右键 B。"
+          ],
+          "expected": [
+            "{before}和{after}相关的新方向项不显示。",
+            "“关闭”和“关闭其他标签页”仍按已有能力可用；双击开关值没有联动变化。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SET-04",
+          "priority": "P0",
+          "title": "关闭位置功能：组菜单隐藏",
+          "pre": "普通 A、组 G[B,C]、普通 D；位置关闭开关关。",
+          "steps": [
+            "右键组 G 标题。",
+            "右键组内 B。"
+          ],
+          "expected": [
+            "组标题和成员菜单均没有新方向项。",
+            "新建组、取消分组、关闭组等已有项目不被此开关统一隐藏。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SET-05",
+          "priority": "P0",
+          "title": "重新开启立即生效",
+          "pre": "普通 A/B/C；位置关闭开关先关。",
+          "steps": [
+            "开启“按位置批量关闭标签页”，不重启。",
+            "重新打开 B 及组标题菜单。"
+          ],
+          "expected": [
+            "方向项立即恢复，使用当前布局的{before}／{after}文案。",
+            "双击开关仍保留原值。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SET-06",
+          "priority": "P0",
+          "title": "开关组合互不影响",
+          "pre": "普通 A/B/C，每次只改指定开关。",
+          "steps": [
+            "分别设置 双击关／位置关、双击开／位置关、双击关／位置开、双击开／位置开。",
+            "各组合都双击一个新建普通标签，并打开另一个标签的菜单。"
+          ],
+          "expected": [
+            "双击是否关闭只由双击开关控制。",
+            "方向项是否存在只由位置开关控制；不能用“关闭其他”是否出现来判断位置开关。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SET-07",
+          "priority": "P0",
+          "title": "偏好保存与重启",
+          "pre": "记下原有设置；没有未保存的真实资料。",
+          "steps": [
+            "将两个开关设为不同值，例如双击开／位置关。",
+            "正常退出并重新启动同一个 app、同一个 macOS 用户。",
+            "再查看设置和右键菜单。"
+          ],
+          "expected": [
+            "两个值都保留；不会被启动流程改成默认值。",
+            "普通和组菜单仍遵循保存的值。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [
+            "once"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SET-08",
+          "priority": "P1",
+          "title": "同渠道不同窗口／Space 共用偏好",
+          "pre": "同一 app 中有测试窗口 W1/W2、测试 Space S1/S2。",
+          "steps": [
+            "在 W1/S1 关闭位置功能。",
+            "分别在 W2 和 S2 重新打开菜单。",
+            "再在任一窗口开启。"
+          ],
+          "expected": [
+            "同一 app 的偏好一致；新打开菜单读取最新值。",
+            "开关不按 tab、Space 或 Profile 各存一份；其他安装渠道是否共用不能据此推断。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "DBL",
+      "title": "双击关闭",
+      "summary": "这是单页手势；分屏中只关闭所点的一侧。方向关闭和“关闭其他”才按分屏整体处理。",
+      "cases": [
+        {
+          "id": "DBL-01",
+          "priority": "P0",
+          "title": "关闭开关时双击普通页",
+          "pre": "普通 A/B/C；双击关闭关。",
+          "steps": [
+            "C 活动时双击 B 的标题区。",
+            "再双击 B 图标区。"
+          ],
+          "expected": [
+            "B 被正常激活，A/B/C 均不因双击关闭。",
+            "标题区和图标区没有相反结果。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-02",
+          "priority": "P0",
+          "title": "开启时双击活动普通页",
+          "pre": "普通 A/B/C；B 活动，双击关闭开。",
+          "steps": [
+            "在 B 标题区连续双击一次。",
+            "等列表稳定。"
+          ],
+          "expected": [
+            "只关闭 B；A/C 保留。",
+            "活动内容来自仍存在的页面，没有残留 B 容器。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-03",
+          "priority": "P0",
+          "title": "开启时双击非活动普通页",
+          "pre": "普通 A/B/C；C 活动，双击关闭开。",
+          "steps": [
+            "双击 B 的标题区。",
+            "重新建序列，双击 B 的图标区。"
+          ],
+          "expected": [
+            "每次只移除 B，A/C 不被误关。",
+            "第一击可能先激活 B，但不影响目标是 B。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-04",
+          "priority": "P0",
+          "title": "分屏左／上侧只关单页",
+          "pre": "A、分屏 S[B,C]、D；双击关闭开；S 为普通分屏。",
+          "steps": [
+            "双击 B 对应的半格。",
+            "观察 C 与其他页面。"
+          ],
+          "expected": [
+            "仅 B 关闭，C 以单页继续存在；A/D 保留。",
+            "不出现批量关闭接口连带关掉 C 的现象。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-05",
+          "priority": "P0",
+          "title": "分屏右／下侧与非焦点窗格",
+          "pre": "A、分屏 S[B,C]、D；B 为分屏内活动窗格。",
+          "steps": [
+            "双击 C 对应半格。",
+            "重建后交换两侧，再双击现在位于另一侧的 C。"
+          ],
+          "expected": [
+            "每次只关闭实际点击的 C，B 保留。",
+            "不因代表 tab、焦点或左右交换而关闭错误一侧。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-06",
+          "priority": "P0",
+          "title": "组内分屏接收真实双击",
+          "pre": "组 G[A, S[B,C], D]；双击关闭开。",
+          "steps": [
+            "双击组内分屏 B 半格。",
+            "重建后双击 C 半格。"
+          ],
+          "expected": [
+            "每次只关点击的一侧；另一侧及 A/D 保留组关系。",
+            "内层表格没有吞掉双击，也没有一击触发两次关闭。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-07",
+          "priority": "P1",
+          "title": "带修饰键不触发新增双击关闭",
+          "pre": "普通 A/B/C；双击关闭开。",
+          "steps": [
+            "分别按住 Command、Shift、Option、Control 双击 B；每次重建基线。"
+          ],
+          "expected": [
+            "新增双击关闭不会执行。",
+            "原有多选、分屏或上下文行为允许发生，按原有语义记录；不要求页面完全不变化。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-08",
+          "priority": "P1",
+          "title": "单击、关闭按钮与拖动不被混淆",
+          "pre": "普通 A/B/C；双击关闭开。",
+          "steps": [
+            "单击 B。",
+            "把 B 拖到另一位置。",
+            "只点击 C 的关闭按钮一次。"
+          ],
+          "expected": [
+            "单击和拖动不关闭 B。",
+            "关闭按钮只关闭 C，不触发邻接页面的第二次关闭。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "DBL-09",
+          "priority": "P1",
+          "title": "固定项与书签保留原有双击动作",
+          "pre": "新建测试 pin P 和书签 M，均已打开；记录输入标记及原有动作。",
+          "steps": [
+            "分别在双击开关关和开时双击 pin P、书签 M。",
+            "可在 pin 内先导航到另一测试页，再观察双击回原地址等已有动作。"
+          ],
+          "expected": [
+            "普通 tab 的关闭开关不会接管 pin／书签的双击。",
+            "保存项不被删除；未点击的普通页面不被关闭。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "POS",
+      "title": "普通标签按位置关闭",
+      "summary": "用真实可见顺序算范围。右键对象是锚点，不要求它是当前页；锚点永远保留。",
+      "cases": [
+        {
+          "id": "POS-01",
+          "priority": "P0",
+          "title": "从中间关闭前方",
+          "pre": "普通 A/B/C/D/E/F；位置关闭开；D 活动。",
+          "steps": [
+            "右键 D，选择{before}。"
+          ],
+          "expected": [
+            "A/B/C 关闭，D/E/F 保留，顺序不变。",
+            "当前页仍是 D。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance",
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-02",
+          "priority": "P0",
+          "title": "从中间关闭后方",
+          "pre": "普通 A/B/C/D/E/F；位置关闭开；C 活动。",
+          "steps": [
+            "右键 C，选择{after}。"
+          ],
+          "expected": [
+            "D/E/F 关闭，A/B/C 保留。",
+            "当前页仍是 C。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance",
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-03",
+          "priority": "P0",
+          "title": "非当前锚点且当前页在保留侧",
+          "pre": "普通 A/B/C/D/E/F；F 活动。",
+          "steps": [
+            "右键 C，选择{before}。"
+          ],
+          "expected": [
+            "只关闭 A/B，C/D/E/F 保留。",
+            "不是按 F 的位置关闭；F 不被无故切走。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-04",
+          "priority": "P0",
+          "title": "非当前锚点且当前页在关闭侧",
+          "pre": "普通 A/B/C/D/E/F；F 活动。",
+          "steps": [
+            "右键 C，选择{after}。"
+          ],
+          "expected": [
+            "只关闭 D/E/F，A/B/C 保留。",
+            "焦点落在仍存在的页；无已销毁页面残影或空白内容。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "performance",
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-05",
+          "priority": "P0",
+          "title": "首项、末项、唯一项禁用",
+          "pre": "分别准备 A/B/C 和只有 A 的普通区；位置关闭开。",
+          "steps": [
+            "右键首项 A 看{before}。",
+            "右键末项 C 看{after}。",
+            "只剩 A 时看两个方向。"
+          ],
+          "expected": [
+            "空范围的菜单项存在但禁用。",
+            "唯一项的两个方向均禁用；pin 和书签不会被算成可关闭目标。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance",
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-06",
+          "priority": "P0",
+          "title": "拖动后的顺序才是依据",
+          "pre": "普通 A/B/C/D；位置关闭开。",
+          "steps": [
+            "把 D 拖到 A 前，确认顺序 D/A/B/C。",
+            "右键 B，选择{before}。"
+          ],
+          "expected": [
+            "D 和 A 关闭，B/C 保留。",
+            "不能按最初的 A/B/C/D 关闭范围；先等拖动结果稳定再操作。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-07",
+          "priority": "P1",
+          "title": "切换布局后方向和范围更新",
+          "pre": "普通 A/B/C/D；位置关闭开。",
+          "steps": [
+            "从 Performance 切到 Comfortable，重新右键 C。",
+            "再切到 Balanced，重新打开菜单。"
+          ],
+          "expected": [
+            "Comfortable 使用左右，Balanced 使用上下。",
+            "顺序、锚点和被保护项的规则保持一致；不把页面内部的分屏方向当成标签栏方向。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-08",
+          "priority": "P1",
+          "title": "长列表滚动和屏幕外目标",
+          "pre": "普通区至少 20 页，标题唯一；将第 10 页设为锚点。",
+          "steps": [
+            "滚动使前方和后方都各有页面不可见。",
+            "关闭一个方向，对照操作前记录的完整顺序。"
+          ],
+          "expected": [
+            "关闭全部逻辑目标，包括屏幕外页面。",
+            "不只处理屏幕内 cell，不因滚动错认同一复用行。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "POS-09",
+          "priority": "P1",
+          "title": "标题和图标命中同一锚点",
+          "pre": "普通 A/B/C；位置关闭开。",
+          "steps": [
+            "分别在 B 的图标和标题上右键，查看两个方向。",
+            "在长标题、加载中的图标上重复一次。"
+          ],
+          "expected": [
+            "锚点都是 B；菜单不会取到活动页或相邻页。",
+            "纯空白处的菜单不得把没有锚点的点击变成关闭整批页面。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "SPL",
+      "title": "分屏作为关闭单位",
+      "summary": "普通分屏示例：A | S[B+C] | D | E；方括号代表一个合并标签项。",
+      "cases": [
+        {
+          "id": "SPL-01",
+          "priority": "P0",
+          "title": "锚点分屏完整保留：前方",
+          "pre": "A | S[B+C] | D | E；位置关闭开。",
+          "steps": [
+            "从分屏的任一半右键选择{before}。"
+          ],
+          "expected": [
+            "只关闭 A，B/C/D/E 均保留。",
+            "B/C 仍是原来的分屏，两页输入标记不丢失。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SPL-02",
+          "priority": "P0",
+          "title": "锚点分屏完整保留：后方",
+          "pre": "A | S[B+C] | D | E；位置关闭开。",
+          "steps": [
+            "从分屏的另一半右键选择{after}。"
+          ],
+          "expected": [
+            "D/E 关闭，A/B/C 保留。",
+            "不因为代表页在左或焦点在右而拆掉锚点。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance",
+            "balanced"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SPL-03",
+          "priority": "P0",
+          "title": "目标分屏整对关闭",
+          "pre": "A | S[B+C] | D | E；位置关闭开。",
+          "steps": [
+            "右键 E 关闭{before}。",
+            "重建后右键 A 关闭{after}。"
+          ],
+          "expected": [
+            "每次 S 的两页都关闭；没有孤立的 B 或 C 留下。",
+            "锚点本身保留，其他剩余集合与各自方向一致。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SPL-04",
+          "priority": "P1",
+          "title": "交换窗格与上下分屏",
+          "pre": "A | S[B+C] | D；位置关闭开。",
+          "steps": [
+            "交换 B/C 位置。",
+            "把页面分屏改成上下布局，再从分屏菜单关闭{after}。"
+          ],
+          "expected": [
+            "普通区 D 关闭，S 两页保留。",
+            "标签栏上下／左右方向只由浏览器布局决定，和分屏内部排列无关。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SPL-05",
+          "priority": "P0",
+          "title": "关闭其他保留完整锚点分屏",
+          "pre": "A | S[B+C] | D；有测试 pin P 和打开的书签 M。",
+          "steps": [
+            "右键 B 或 C，选择“关闭其他标签页”。"
+          ],
+          "expected": [
+            "A/D 关闭，B/C 仍配对。",
+            "P、书签保存项和受保护的书签页面保留。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SPL-06",
+          "priority": "P1",
+          "title": "多个目标分屏",
+          "pre": "A | S1[B+C] | D | S2[E+F] | G；位置关闭开。",
+          "steps": [
+            "右键 D 关闭{after}。"
+          ],
+          "expected": [
+            "S2 两页与 G 关闭，A/S1/D 保留。",
+            "不把所有分屏一并关闭，也不只保留某一侧单页。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SPL-07",
+          "priority": "P1",
+          "title": "分屏在组内时方向单位仍完整",
+          "pre": "普通 A | 组 G[B, S[C+D], E] | 普通 F。",
+          "steps": [
+            "从 S 任一半关闭{after}。"
+          ],
+          "expected": [
+            "E/F 关闭；A/B/C/D 保留。",
+            "C/D 保留分屏及原组关系。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SPL-08",
+          "priority": "P1",
+          "title": "恢复被关闭的分屏",
+          "pre": "普通 A | S[B+C] | D；无未保存内容。",
+          "steps": [
+            "从 A 关闭当前布局的后方标签（纵向为下方，水平为右侧），记录实际关闭内容。",
+            "用历史记录或 Command-Shift-T 按恢复条目逐项恢复。"
+          ],
+          "expected": [
+            "可通过已有恢复入口找回关闭的页面，不丢失 URL。",
+            "检查分屏配对、方向和比例能否恢复并记录；本项是待验收回归，不能因普通 tab 恢复成功就算分屏通过。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "PIN",
+      "title": "Pin 与固定分屏",
+      "summary": "范围关闭和关闭其他默认保护所有 pin；显式关闭页面不等于取消固定或删除保存项。",
+      "cases": [
+        {
+          "id": "PIN-01",
+          "priority": "P0",
+          "title": "普通 pin 不在方向范围内",
+          "pre": "测试 pin P 已打开并有输入标记；普通 A/B/C；位置关闭开。",
+          "steps": [
+            "从 B 关闭{before}。",
+            "重建普通区，从 B 关闭{after}。",
+            "回到 P 查看标记和打开编号。"
+          ],
+          "expected": [
+            "只关闭普通方向目标。",
+            "P 页面和保存项都保留；不是关闭后重开一个同 URL 页面。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "PIN-02",
+          "priority": "P0",
+          "title": "关闭其他保护所有 pin",
+          "pre": "测试 pin P/Q 均打开，普通 A/B/C。",
+          "steps": [
+            "从 B 选择“关闭其他标签页”。",
+            "在 P/Q 查看输入标记。"
+          ],
+          "expected": [
+            "只关普通 A/C。",
+            "B、P、Q 均保留；P/Q 的标记及打开编号不变。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "PIN-03",
+          "priority": "P0",
+          "title": "pin 菜单不提供位置方向",
+          "pre": "包含一个打开的 pin P 和一个未打开的测试 pin Q。",
+          "steps": [
+            "分别右键 P 和 Q。",
+            "对固定分屏也检查一次。"
+          ],
+          "expected": [
+            "不显示新增方向项。",
+            "打开项原有“关闭”仍可用；关闭项不伪装成普通列表锚点。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "performance",
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "PIN-04",
+          "priority": "P0",
+          "title": "固定分屏受到整体保护",
+          "pre": "固定分屏 PS[P+Q] 已打开并有各自标记，普通 A/B/C。",
+          "steps": [
+            "从 B 关闭其他，或关闭 B 的一个方向。",
+            "切到 PS 查看两边。"
+          ],
+          "expected": [
+            "PS 两页、配对关系和标记都保留。",
+            "固定分屏不能被普通范围的一半命中再连带误关。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "PIN-05",
+          "priority": "P0",
+          "title": "显式关闭固定分屏后可完整重开",
+          "pre": "固定分屏 PS[P+Q] 已打开。",
+          "steps": [
+            "在 PS 自己的菜单选“关闭”。",
+            "确认仍只保留一个合并的固定项。",
+            "点击这个固定项重新打开。"
+          ],
+          "expected": [
+            "关闭的是两个实时页面，保存的固定项没有被取消。",
+            "重开后仍是 P/Q 分屏，保存的方向和配对关系不丢失。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "PIN-06",
+          "priority": "P1",
+          "title": "从 pin 发起关闭其他",
+          "pre": "测试 pin P 和固定分屏 PS 已保存；普通 A/B/C。",
+          "steps": [
+            "从 P 的已有菜单选择“关闭其他标签页”。",
+            "若 P 未打开也有该项目，单独复测。"
+          ],
+          "expected": [
+            "关闭普通 A/B/C，其他 pin／固定分屏保存项保留。",
+            "不把 pin 的独立排列位置用于推算普通列表前后；窗口是否进入占位态遵循现有生命周期。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "GRP",
+      "title": "标签组与折叠组",
+      "summary": "成员不是整组锚点。成员方向可以跨组；组标题方向保护整组。关闭最后成员沿用 Framework 确认。",
+      "cases": [
+        {
+          "id": "GRP-01",
+          "priority": "P0",
+          "title": "组内成员只关闭前方成员",
+          "pre": "普通 A | 组 G[B,C,D] | 普通 E；位置关闭开。",
+          "steps": [
+            "右键 C，选择{before}。"
+          ],
+          "expected": [
+            "A/B 关闭，C/D/E 保留。",
+            "C/D 仍在 G；组名、颜色及展开状态保留。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-02",
+          "priority": "P0",
+          "title": "组内成员跨组关闭后方",
+          "pre": "普通 A | 组 G[B,C,D] | 普通 E；位置关闭开。",
+          "steps": [
+            "右键 C，选择{after}。"
+          ],
+          "expected": [
+            "D/E 关闭，A/B/C 保留。",
+            "不把范围限制为 G 内，也不整组扩大关闭 B。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-03",
+          "priority": "P0",
+          "title": "组标题保护完整组：前方",
+          "pre": "A | G[B,C,D] | E；位置关闭开。",
+          "steps": [
+            "右键 G 标题选择组对应的{before}。"
+          ],
+          "expected": [
+            "仅 A 关闭，G 全组及 E 保留。",
+            "不使用组中活动成员的下标作为边界。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-04",
+          "priority": "P0",
+          "title": "组标题保护完整组：后方",
+          "pre": "A | G[B,C,D] | E；位置关闭开。",
+          "steps": [
+            "右键 G 标题选择组对应的{after}。"
+          ],
+          "expected": [
+            "仅 E 关闭，A 和 G 全组保留。",
+            "标题文案明确是组外方向。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance",
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-05",
+          "priority": "P0",
+          "title": "折叠组作为锚点",
+          "pre": "A | 折叠 G[B,C,D] | E；位置关闭开。",
+          "steps": [
+            "不展开 G，从标题执行一个方向关闭。",
+            "再展开检查成员数和内容。"
+          ],
+          "expected": [
+            "结果和展开状态下相同。",
+            "G 所有隐藏成员保留，而不是只保留某个代表页。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-06",
+          "priority": "P0",
+          "title": "整个折叠组成为目标：取消",
+          "pre": "G[B,C] | D；G 为可丢弃测试组；位置关闭开。",
+          "steps": [
+            "从 D 选择{before}。",
+            "如果出现永久删除组确认，选择“取消”。",
+            "展开 G 检查成员。"
+          ],
+          "expected": [
+            "复用现有组确认；取消后 G/B/C 保留。",
+            "若取消前其他普通目标已经关闭，不要求整批回滚，但必须准确记录实际结果。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-07",
+          "priority": "P1",
+          "title": "整个测试组成为目标：确认",
+          "pre": "只使用明确可丢弃的 TC-G 组，已确认其中没有真实页面；“不再询问”不勾选。",
+          "steps": [
+            "从组外发起会清空 TC-G 的位置关闭。",
+            "人工核对对话框后确认删除。"
+          ],
+          "expected": [
+            "目标组及其页面按原有组生命周期移除；其他组、pin 和书签不受影响。",
+            "此项未在开发自测中确认执行；不要把取消路径结果代替本项。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "仅重建可丢弃的 TC-G；不要用真实组验证永久删除。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-08",
+          "priority": "P1",
+          "title": "两个组边界与重排",
+          "pre": "A | G1[B,C] | D | G2[E,F] | H。",
+          "steps": [
+            "把整个 G2 拖到 G1 前，记录真实顺序。",
+            "从 G1 标题关闭{after}。"
+          ],
+          "expected": [
+            "按拖动后的组范围计算。",
+            "保留锚点整组；目标中组的确认逐项遵循现有机制，取消时记下实际保留集合。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-09",
+          "priority": "P1",
+          "title": "组状态没有误改",
+          "pre": "有命名组 TC-G，设非默认颜色，包含多个输入标记。",
+          "steps": [
+            "从组内关闭一部分成员。",
+            "切换布局再回来，观察余下成员。"
+          ],
+          "expected": [
+            "组名和颜色不被重置；没有无故取消分组或拆开未关闭分屏。",
+            "不把“空组永久保存”作为本功能的承诺。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "GRP-10",
+          "priority": "P1",
+          "title": "组标题边界没有普通目标时禁用",
+          "pre": "普通区只有 G[B,C]；外面仅 pin 和书签。",
+          "steps": [
+            "右键 G 标题，查看两方向。"
+          ],
+          "expected": [
+            "两个方向存在但禁用。",
+            "不把被保护区或组自身算成组外目标。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "BMK",
+      "title": "书签、文件夹与分屏书签",
+      "summary": "保存项和实时页面分别判定。纵向绑定页面保护；水平栏中普通页面参与，不能按 URL 是否收藏来一概保护。",
+      "cases": [
+        {
+          "id": "BMK-01",
+          "priority": "P0",
+          "title": "纵向已打开书签页面被保护",
+          "pre": "书签 M 由书签区打开，输入标记；普通 A/B/C。",
+          "steps": [
+            "从 B 执行一个方向关闭，再重建普通区执行“关闭其他”。",
+            "回到 M 对照输入标记和打开编号。"
+          ],
+          "expected": [
+            "只关闭普通目标；M 的实时页面与保存项保留。",
+            "仅看到书签行还在不算通过，要核对原页面状态。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "BMK-02",
+          "priority": "P0",
+          "title": "纵向分屏书签两页被保护",
+          "pre": "书签 MS[M+N] 从书签区打开，两页各有标记；普通 A/B/C。",
+          "steps": [
+            "从 B 关闭其他。",
+            "点击 MS 查看两边状态。"
+          ],
+          "expected": [
+            "两页及保存的分屏书签都保留。",
+            "没有只保护主页面而连带关闭另一半。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "BMK-03",
+          "priority": "P0",
+          "title": "相同 URL 的普通副本不能被误保护",
+          "pre": "保存书签 M，再用复制网址、Command-T 的方式新开同 URL 普通副本 M2；普通 A 位于它前。",
+          "steps": [
+            "从 A 执行{after}。",
+            "查看保存的 M 和受保护的绑定页。"
+          ],
+          "expected": [
+            "普通副本 M2 正常关闭。",
+            "M 保存项保留；不能因为 M2 的 URL 被收藏就把它排除。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "BMK-04",
+          "priority": "P0",
+          "title": "水平打开的书签页面按普通页关闭",
+          "pre": "Comfortable；先保存 M，再从书签入口打开它为普通 tab；A 在前，M 在后。",
+          "steps": [
+            "从 A 关闭右侧。",
+            "打开书签栏或书签菜单检查 M。"
+          ],
+          "expected": [
+            "M 的普通页面关闭，保存的 M 仍存在且能重新打开。",
+            "不残留打开指示或无内容 tab。"
+          ],
+          "layouts": [
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "BMK-05",
+          "priority": "P1",
+          "title": "切换到水平解除绑定后参加关闭",
+          "pre": "纵向已打开 M 和分屏书签 MS；都有保存项。",
+          "steps": [
+            "切换到 Comfortable。",
+            "记录普通栏新出现的页面／分屏，关闭指定方向。",
+            "再检查保存项。"
+          ],
+          "expected": [
+            "进入普通栏的实时页面按普通范围处理；目标分屏整对关闭。",
+            "M/MS 的保存 URL、两侧标题、布局和文件夹位置不被删除或改写。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "BMK-06",
+          "priority": "P0",
+          "title": "书签和文件夹菜单没有方向项",
+          "pre": "有普通书签 M、分屏书签 MS、内含书签的文件夹 Folder；位置关闭开。",
+          "steps": [
+            "分别右键三个保存项。",
+            "在 Folder 展开／折叠时都检查。"
+          ],
+          "expected": [
+            "不增加按书签排序关闭前后／上下的菜单。",
+            "普通 tab 的关闭不能删除文件夹及其子书签。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "BMK-07",
+          "priority": "P1",
+          "title": "显式关闭书签页面仍可重开",
+          "pre": "纵向已打开 M 与 MS，只使用测试保存项。",
+          "steps": [
+            "用书签已有的关闭控件关闭 M、MS。",
+            "再点击保存项。"
+          ],
+          "expected": [
+            "只关闭实时内容，M/MS 保存项还在。",
+            "MS 再次打开仍能恢复保存的两页和布局。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "SEL",
+      "title": "关闭其他与多选",
+      "summary": "已有“关闭其他”继续可用，和新方向菜单共用普通区保护规则。多选菜单本轮不新增方向项。",
+      "cases": [
+        {
+          "id": "SEL-01",
+          "priority": "P0",
+          "title": "普通关闭其他精确保留锚点",
+          "pre": "普通 A/B/C，C 活动；有 pin P 和纵向打开的书签 M。",
+          "steps": [
+            "右键非活动 B，选择“关闭其他标签页”。"
+          ],
+          "expected": [
+            "A/C 关闭，B 保留；保护项保留。",
+            "使用右键锚点 B，不以活动 C 为保留对象。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance",
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SEL-02",
+          "priority": "P0",
+          "title": "多选关闭其他保留全部选中",
+          "pre": "普通 A/B/C/D；位置和双击开关任意。",
+          "steps": [
+            "单击 B，Command-单击 C。",
+            "在已选 C 上右键，选择“关闭其他标签页”。"
+          ],
+          "expected": [
+            "A/D 关闭，B/C 均保留；pin、书签保护同普通关闭其他。",
+            "多选菜单不因位置开关状态丢失原有项目。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SEL-03",
+          "priority": "P0",
+          "title": "多选只有部分 split 也保留整对",
+          "pre": "A | S[B+C] | D | E；通过现有多选方式选中 S 和 D。",
+          "steps": [
+            "从选择菜单执行“关闭其他标签页”。"
+          ],
+          "expected": [
+            "B/C/D 都保留；A/E 关闭。",
+            "即使 UI 选择模型只持有分屏一侧，另一侧也不能被当成其他页。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SEL-04",
+          "priority": "P0",
+          "title": "没有其他普通页就禁用",
+          "pre": "普通区只有 A/B，二者均多选；外面有 pin 或书签页。",
+          "steps": [
+            "右键选择集合，查看“关闭其他标签页”。"
+          ],
+          "expected": [
+            "关闭其他禁用，不能把受保护项算成可关闭数量。",
+            "有普通 C 时该项重新可用。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SEL-05",
+          "priority": "P1",
+          "title": "显式关闭所选仍遵循所选语义",
+          "pre": "普通 A/B/C，选中 B；位置关闭开关关。",
+          "steps": [
+            "从原有多选菜单执行“关闭标签页”。"
+          ],
+          "expected": [
+            "B 关闭，A/C 保留。",
+            "位置开关不会把已有显式关闭功能一并关闭。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "LIFE",
+      "title": "未保存确认、恢复与生命周期",
+      "summary": "提交一个关闭请求不保证整批全部成功；取消网页离开或组确认可以产生部分完成。",
+      "cases": [
+        {
+          "id": "LIFE-01",
+          "priority": "P0",
+          "title": "未保存页面取消关闭",
+          "pre": "A | B(未保存型) | C；在 B 真正输入内容，看到“离开确认已启用”。",
+          "steps": [
+            "右键 A 执行{after}。",
+            "出现离开网站提示时选择取消。",
+            "检查 B 输入内容及实际剩余页。"
+          ],
+          "expected": [
+            "B 和输入内容保留，A 保留。",
+            "C 可能已关闭；记录实际集合，不把部分完成误报为整批回滚失败。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "LIFE-02",
+          "priority": "P0",
+          "title": "未保存页面确认离开",
+          "pre": "A | B(未保存型) | C，B 内只有可丢弃测试文字。",
+          "steps": [
+            "从 A 关闭{after}。",
+            "核对是测试页后人工确认离开。"
+          ],
+          "expected": [
+            "B 在确认后关闭；A 保留。",
+            "对话框不被绕过，列表不提前宣称 B 已消失。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "LIFE-03",
+          "priority": "P1",
+          "title": "同批多个未保存页",
+          "pre": "A | B(未保存型) | C(未保存型) | D。",
+          "steps": [
+            "在 B/C 各输入不同标记。",
+            "从 A 关闭{after}，在各提示中分别选择一次取消和一次离开。"
+          ],
+          "expected": [
+            "取消的页面和标记保留，确认的页面关闭。",
+            "无卡死、重复无限提示或关闭错对象；记录每个提示对应的页面。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "LIFE-04",
+          "priority": "P0",
+          "title": "普通页面撤销关闭",
+          "pre": "普通 A/B/C/D；无未保存内容。",
+          "steps": [
+            "从 B 关闭{after}。",
+            "使用 Command-Shift-T 或历史记录恢复刚关闭的条目，必要时重复。"
+          ],
+          "expected": [
+            "可以找回 C/D 的 URL 和页面。",
+            "不要求一次快捷键一定恢复整批；按框架恢复条目记录实际粒度。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "comfortable"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "LIFE-05",
+          "priority": "P1",
+          "title": "活动页销毁后焦点有效",
+          "pre": "普通 A/B/C，C 活动。",
+          "steps": [
+            "右键 A 关闭{after}。",
+            "在剩下的 A 中点击链接或输入测试文字。"
+          ],
+          "expected": [
+            "B/C 关闭后 A 能正常显示、滚动和输入。",
+            "没有悬空活动指针、空白 WebContent、无法点击的覆盖层。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "LIFE-06",
+          "priority": "P1",
+          "title": "最后普通页与受保护页",
+          "pre": "普通区只有 A；pin P 或纵向书签 M 已打开。",
+          "steps": [
+            "在 A 菜单检查两个方向和关闭其他。",
+            "从 P 的关闭其他入口关闭最后普通 A（若该入口存在）。"
+          ],
+          "expected": [
+            "空方向禁用；保护页不被当成其他普通页。",
+            "显式清空普通区后按原有窗口／占位行为处理，P/M 保存项仍在，不退出整个应用。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "LIFE-07",
+          "priority": "P1",
+          "title": "加载中或已卸载页面",
+          "pre": "普通 A/B/C；让 B 加载中或通过浏览器现有功能卸载其内容。",
+          "steps": [
+            "以 B 为锚点关闭一个方向。",
+            "重建后把 B 放到关闭目标方向。"
+          ],
+          "expected": [
+            "锚点 B 保留；作为目标时 B 正常关闭。",
+            "不强制重载后才允许关闭，不因卸载状态误用其他页。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "LIFE-08",
+          "priority": "P1",
+          "title": "连续请求不误关新锚点",
+          "pre": "普通 A/B/C/D/E；位置关闭开。",
+          "steps": [
+            "对 C 连续快速执行同一方向关闭，再重新打开菜单。",
+            "在第一次关闭完成后立即新建 F。"
+          ],
+          "expected": [
+            "原目标只被销毁一次，没有越界或崩溃。",
+            "新请求按调用时的有效对象计算，不沿用已消失行的索引误关邻页。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "SCOPE",
+      "title": "窗口、Space、隐身与快捷键",
+      "summary": "这些扩展边界必须单独验收；没有支持环境时记录阻塞，不能引用开发已测的普通窗口结果。",
+      "cases": [
+        {
+          "id": "SCOPE-01",
+          "priority": "P0",
+          "title": "只影响所属窗口",
+          "pre": "测试窗口 W1 中 A/B/C，W2 中 X/Y/Z，全部使用测试页；两个窗口同渠道。",
+          "steps": [
+            "使 W2 最近活动，然后在 W1 非当前 B 上右键执行一个方向。",
+            "分别检查两个窗口。"
+          ],
+          "expected": [
+            "只按 W1 中 B 的原生顺序关闭。",
+            "W2 的页、活动内容和输入标记不变；不能操作“最后活动窗口”。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SCOPE-02",
+          "priority": "P0",
+          "title": "只影响当前 Space",
+          "pre": "同窗口中 S1:A/B/C，S2:X/Y/Z；记录各自序列和标记。",
+          "steps": [
+            "在 S1 的 B 执行方向关闭和关闭其他，各复测一次。",
+            "切到 S2。"
+          ],
+          "expected": [
+            "S2 页面及标记不变。",
+            "S1 的保护规则正常；切 Space 不把菜单目标留在另一个 Space。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SCOPE-03",
+          "priority": "P1",
+          "title": "菜单打开后原对象失效",
+          "pre": "只使用两个临时窗口及可丢弃页面，有条件让原锚点被另一入口关闭／移走。",
+          "steps": [
+            "打开锚点菜单后让锚点消失或移出所属窗口，再尝试原菜单项。",
+            "若平台会自动关闭菜单，记录该行为。"
+          ],
+          "expected": [
+            "失效请求不误关当前位置的新页面。",
+            "自动关闭菜单是安全结果；无法稳定制造时标记阻塞，不用脚本修改内部状态伪造手测。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SCOPE-04",
+          "priority": "P1",
+          "title": "隐身窗口同样计算范围",
+          "pre": "支持隐身的测试构建；新开纯测试隐身窗口 A/B/C。",
+          "steps": [
+            "从 B 关闭一个方向及关闭其他。",
+            "检查正常窗口。"
+          ],
+          "expected": [
+            "只操作当前隐身窗口的普通目标；正常窗口不受影响。",
+            "pin／书签写入入口是否存在遵循原有隐身限制。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SCOPE-05",
+          "priority": "P1",
+          "title": "Incognito Space 最后页确认",
+          "pre": "有独立临时 Incognito Space；发包人确认此构建支持。",
+          "steps": [
+            "通过原有关闭其他入口使其接近空集，观察最后页／Space 确认。",
+            "先取消，再在纯测试环境确认一次。"
+          ],
+          "expected": [
+            "复用原有 Incognito Space 关闭确认；取消不销毁该 Space。",
+            "本功能不绕过确认，不把正常 Space 一起关闭。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SCOPE-06",
+          "priority": "P1",
+          "title": "agent 控制权保护",
+          "pre": "官方支持 AI／Agent Space 的构建；agent 正在控制一个临时测试 Space。",
+          "steps": [
+            "在用户尚未接管时尝试双击关闭、方向关闭和关闭其他。",
+            "正式接管后重复。"
+          ],
+          "expected": [
+            "未接管时不关闭 agent 控制页，入口可以禁用或操作不执行。",
+            "接管后按普通规则生效；OpenSource 不具备此前置时标记阻塞。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SCOPE-07",
+          "priority": "P1",
+          "title": "旧关闭右侧快捷键走原生顺序",
+          "pre": "在快捷键设置找到 Close Tabs to the Right／关闭右侧，记录旧绑定，为测试临时指定无冲突组合；普通 D/A/B/C。",
+          "steps": [
+            "B 活动、位置关闭开时触发绑定。",
+            "重建序列并关闭位置开关，再触发相同绑定。"
+          ],
+          "expected": [
+            "开启时按原生顺序关闭 B 后面的 C；纵向时含义是下方。",
+            "关闭时方向动作不执行；不能只隐藏菜单却由快捷键绕过。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "恢复原先的快捷键绑定和开关值；不得覆盖系统保留快捷键。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "SCOPE-08",
+          "priority": "P1",
+          "title": "旧关闭其他快捷键不受位置开关封禁",
+          "pre": "记录旧关闭其他快捷键并临时指定无冲突组合；普通 A/B/C，B 活动，含测试保护项。",
+          "steps": [
+            "位置关闭开关关时触发关闭其他绑定。",
+            "多选 B/C 后再测。"
+          ],
+          "expected": [
+            "原有关闭其他仍执行保护规则。",
+            "单选保留 B；多选保留 B/C；位置开关只控制方向关闭。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "恢复原先的快捷键绑定和开关值。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    },
+    {
+      "id": "VIS",
+      "title": "语言、外观、可访问性与交付",
+      "summary": "9 种语言均已有资源；实际 UI 仍须逐种语言检查，不把资源构建校验当成界面验收。",
+      "cases": [
+        {
+          "id": "VIS-01",
+          "priority": "P0",
+          "title": "简体中文设置和菜单",
+          "pre": "语言为简体中文；位置关闭开。",
+          "steps": [
+            "查看第二卡片的两个开关和说明。",
+            "分别在普通 tab、组标题上查看当前布局方向菜单。"
+          ],
+          "expected": [
+            "开关是“双击关闭标签页”“按位置批量关闭标签页”。",
+            "方向项使用中文，不出现 key、英文回退或不适用的方向。"
+          ],
+          "layouts": [
+            "performance",
+            "balanced",
+            "comfortable"
+          ],
+          "smoke": true,
+          "observed": [
+            "performance"
+          ],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "VIS-02",
+          "priority": "P1",
+          "title": "其他语言 UI 验收（本项语言见执行点标签）",
+          "pre": "只测试本执行点标签标明的语言；在通用设置切换语言并遵循 app 提示重启。",
+          "steps": [
+            "确认当前界面语言与本项标签一致。",
+            "查看两个开关、说明，以及普通和组标题菜单；纵向和水平各看一次。",
+            "对长文案检查换行、可读性及关闭项方向。"
+          ],
+          "expected": [
+            "该语言没有 key、缺字或意外的英文回退；说明和方向准确。",
+            "两个布局都检查后才标为通过；各语言结果独立保存。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录本项语言代码，附两个布局的方向菜单截图；设置说明不能被截断。",
+          "languages": [
+            "en",
+            "zh-Hant",
+            "ja",
+            "ko",
+            "de",
+            "fr",
+            "es",
+            "nl"
+          ]
+        },
+        {
+          "id": "VIS-03",
+          "priority": "P1",
+          "title": "深浅外观和窄侧栏",
+          "pre": "两个开关均开；普通页、普通 split 和组内 split 各一份。",
+          "steps": [
+            "分别使用浅色与深色。",
+            "侧栏拖到允许的最窄；组折叠／展开。",
+            "查看关闭控件、长标题、禁用菜单和设置说明。"
+          ],
+          "expected": [
+            "文字、开关、焦点和禁用状态可辨认，说明正常换行。",
+            "关闭按钮和半格命中区域不重叠，不因窄栏关闭相邻页。"
+          ],
+          "layouts": [
+            "performance",
+            "comfortable"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "VIS-04",
+          "priority": "P1",
+          "title": "键盘和辅助功能标签",
+          "pre": "系统允许使用键盘导航或 VoiceOver；只操作测试页。",
+          "steps": [
+            "在高级页通过键盘定位并切换两个开关。",
+            "使用辅助功能查看每个开关的名称。"
+          ],
+          "expected": [
+            "两个控件分别有清楚的名称，状态可读。",
+            "设置说明可读；切换一个不会改变另一个；焦点不会跳到无关设置。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": false,
+          "observed": [],
+          "reset": "重新建立该用例的初始序列；保留原有 pin、书签和其他窗口。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        },
+        {
+          "id": "VIS-05",
+          "priority": "P0",
+          "title": "导出本轮结果并恢复环境",
+          "pre": "本轮测试结束，失败／阻塞均填了备注。",
+          "steps": [
+            "填写实际构建标识，导出 JSON 备份，再复制 Markdown 报告。",
+            "恢复原布局、开关和快捷键；仅取消本轮新增 pin，保留真实 pin。",
+            "清理临时窗口／Space 前逐项核对；需要永久删除测试组时先人工确认。"
+          ],
+          "expected": [
+            "报告包含用例 ID、布局、结果、备注、执行人及构建信息。",
+            "未测项不自动变成通过；所有 P0 未测／失败／阻塞清楚列出。"
+          ],
+          "layouts": [
+            "once"
+          ],
+          "smoke": true,
+          "observed": [
+            "once"
+          ],
+          "reset": "保留导出的报告和必要截图。不要清空真实用户浏览数据。",
+          "evidence": "记录操作前后标签顺序、活动页和截图；若与预期不同，写出实际剩余集合。"
+        }
+      ]
+    }
+  ],
+  "labels": {
+    "en": {
+      "settings.advanced.tabs.directionalClosingDescription": "Add options to tab and tab group menus to close tabs to the left or right, or above or below in a vertical tab bar.",
+      "settings.advanced.tabs.directionalClosingToggle": "Close tabs by position",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "Double-click a tab to close it. In split view, only the clicked pane closes. Pinned tabs and bookmarks keep their existing double-click actions.",
+      "sidebar.tabContextMenu.closeTabsAbove": "Close Tabs Above",
+      "sidebar.tabContextMenu.closeTabsBelow": "Close Tabs Below",
+      "sidebar.tabContextMenu.closeTabsToLeft": "Close Tabs to the Left",
+      "sidebar.tabContextMenu.closeTabsToRight": "Close Tabs to the Right",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "Close Tabs Above Group",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "Close Tabs Below Group",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "Close Tabs to the Left of Group",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "Close Tabs to the Right of Group",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "Double-click to close tabs"
+    },
+    "zh-Hans": {
+      "settings.advanced.tabs.directionalClosingDescription": "在标签页和标签组的右键菜单中，提供关闭左侧或右侧标签页的选项；使用纵向标签栏时，显示为关闭上方或下方标签页。",
+      "settings.advanced.tabs.directionalClosingToggle": "按位置批量关闭标签页",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "双击标签页即可关闭；分屏时仅关闭点击的一侧。固定标签页和书签保留原有双击操作。",
+      "sidebar.tabContextMenu.closeTabsAbove": "关闭上方标签页",
+      "sidebar.tabContextMenu.closeTabsBelow": "关闭下方标签页",
+      "sidebar.tabContextMenu.closeTabsToLeft": "关闭左侧标签页",
+      "sidebar.tabContextMenu.closeTabsToRight": "关闭右侧标签页",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "关闭标签组上方的标签页",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "关闭标签组下方的标签页",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "关闭标签组左侧的标签页",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "关闭标签组右侧的标签页",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "双击关闭标签页"
+    },
+    "zh-Hant": {
+      "settings.advanced.tabs.directionalClosingDescription": "在分頁與分頁群組的右鍵選單中，提供關閉左側或右側分頁的選項；使用垂直分頁列時，顯示為關閉上方或下方分頁。",
+      "settings.advanced.tabs.directionalClosingToggle": "依位置批次關閉分頁",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "連按兩下分頁即可關閉；分割檢視時僅關閉點選的一側。固定分頁與書籤保留原有的連按兩下操作。",
+      "sidebar.tabContextMenu.closeTabsAbove": "關閉上方分頁",
+      "sidebar.tabContextMenu.closeTabsBelow": "關閉下方分頁",
+      "sidebar.tabContextMenu.closeTabsToLeft": "關閉左側分頁",
+      "sidebar.tabContextMenu.closeTabsToRight": "關閉右側分頁",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "關閉群組上方的分頁",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "關閉群組下方的分頁",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "關閉群組左側的分頁",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "關閉群組右側的分頁",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "連按兩下關閉分頁"
+    },
+    "ja": {
+      "settings.advanced.tabs.directionalClosingDescription": "タブとタブグループのメニューに、左側・右側のタブを閉じる項目を追加します。縦型タブバーでは上側・下側になります。",
+      "settings.advanced.tabs.directionalClosingToggle": "位置を指定してタブをまとめて閉じる",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "タブをダブルクリックすると閉じます。分割表示では、クリックした側だけを閉じます。固定タブとブックマークのダブルクリック操作は変わりません。",
+      "sidebar.tabContextMenu.closeTabsAbove": "上側のタブを閉じる",
+      "sidebar.tabContextMenu.closeTabsBelow": "下側のタブを閉じる",
+      "sidebar.tabContextMenu.closeTabsToLeft": "左側のタブを閉じる",
+      "sidebar.tabContextMenu.closeTabsToRight": "右側のタブを閉じる",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "グループの上側のタブを閉じる",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "グループの下側のタブを閉じる",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "グループの左側のタブを閉じる",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "グループの右側のタブを閉じる",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "ダブルクリックでタブを閉じる"
+    },
+    "ko": {
+      "settings.advanced.tabs.directionalClosingDescription": "탭과 탭 그룹 메뉴에 왼쪽 또는 오른쪽 탭을 닫는 항목을 추가해요. 세로 탭 표시줄에서는 위쪽 또는 아래쪽 탭을 닫아요.",
+      "settings.advanced.tabs.directionalClosingToggle": "위치에 따라 탭 한꺼번에 닫기",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "탭을 두 번 클릭하면 닫혀요. 분할 보기에서는 클릭한 쪽만 닫혀요. 고정 탭과 북마크의 두 번 클릭 동작은 그대로 유지돼요.",
+      "sidebar.tabContextMenu.closeTabsAbove": "위쪽 탭 닫기",
+      "sidebar.tabContextMenu.closeTabsBelow": "아래쪽 탭 닫기",
+      "sidebar.tabContextMenu.closeTabsToLeft": "왼쪽 탭 닫기",
+      "sidebar.tabContextMenu.closeTabsToRight": "오른쪽 탭 닫기",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "그룹 위쪽 탭 닫기",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "그룹 아래쪽 탭 닫기",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "그룹 왼쪽 탭 닫기",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "그룹 오른쪽 탭 닫기",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "두 번 클릭하여 탭 닫기"
+    },
+    "de": {
+      "settings.advanced.tabs.directionalClosingDescription": "Fügt den Menüs für Tabs und Tabgruppen Optionen zum Schließen der Tabs links oder rechts hinzu. Bei einer vertikalen Tableiste gelten die Optionen für Tabs oberhalb oder unterhalb.",
+      "settings.advanced.tabs.directionalClosingToggle": "Tabs nach Position schließen",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "Schließe einen Tab per Doppelklick. In der geteilten Ansicht wird nur der angeklickte Bereich geschlossen. Angeheftete Tabs und Lesezeichen behalten ihre bisherigen Doppelklick-Aktionen.",
+      "sidebar.tabContextMenu.closeTabsAbove": "Tabs oberhalb schließen",
+      "sidebar.tabContextMenu.closeTabsBelow": "Tabs unterhalb schließen",
+      "sidebar.tabContextMenu.closeTabsToLeft": "Tabs links schließen",
+      "sidebar.tabContextMenu.closeTabsToRight": "Tabs rechts schließen",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "Tabs oberhalb der Gruppe schließen",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "Tabs unterhalb der Gruppe schließen",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "Tabs links von der Gruppe schließen",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "Tabs rechts von der Gruppe schließen",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "Tabs per Doppelklick schließen"
+    },
+    "fr": {
+      "settings.advanced.tabs.directionalClosingDescription": "Ajoute aux menus des onglets et des groupes des options pour fermer les onglets à gauche ou à droite, ou au-dessus ou en dessous dans une barre verticale.",
+      "settings.advanced.tabs.directionalClosingToggle": "Fermer les onglets selon leur position",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "Double-cliquez sur un onglet pour le fermer. En vue partagée, seul le volet cliqué se ferme. Les onglets épinglés et les favoris conservent leurs actions de double-clic habituelles.",
+      "sidebar.tabContextMenu.closeTabsAbove": "Fermer les onglets au-dessus",
+      "sidebar.tabContextMenu.closeTabsBelow": "Fermer les onglets en dessous",
+      "sidebar.tabContextMenu.closeTabsToLeft": "Fermer les onglets à gauche",
+      "sidebar.tabContextMenu.closeTabsToRight": "Fermer les onglets à droite",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "Fermer les onglets au-dessus du groupe",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "Fermer les onglets en dessous du groupe",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "Fermer les onglets à gauche du groupe",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "Fermer les onglets à droite du groupe",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "Fermer les onglets par double-clic"
+    },
+    "es": {
+      "settings.advanced.tabs.directionalClosingDescription": "Añade a los menús de pestañas y grupos opciones para cerrar las pestañas a la izquierda o a la derecha, o las de arriba o abajo en una barra vertical.",
+      "settings.advanced.tabs.directionalClosingToggle": "Cerrar pestañas por posición",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "Haz doble clic en una pestaña para cerrarla. En la vista dividida, solo se cierra el panel pulsado. Las pestañas fijadas y los marcadores conservan sus acciones habituales de doble clic.",
+      "sidebar.tabContextMenu.closeTabsAbove": "Cerrar las pestañas de arriba",
+      "sidebar.tabContextMenu.closeTabsBelow": "Cerrar las pestañas de abajo",
+      "sidebar.tabContextMenu.closeTabsToLeft": "Cerrar las pestañas a la izquierda",
+      "sidebar.tabContextMenu.closeTabsToRight": "Cerrar las pestañas a la derecha",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "Cerrar las pestañas encima del grupo",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "Cerrar las pestañas debajo del grupo",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "Cerrar las pestañas a la izquierda del grupo",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "Cerrar las pestañas a la derecha del grupo",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "Cerrar pestañas con doble clic"
+    },
+    "nl": {
+      "settings.advanced.tabs.directionalClosingDescription": "Voegt aan tabblad- en tabbladgroepmenu’s opties toe om tabbladen links of rechts te sluiten, of erboven of eronder bij een verticale tabbladbalk.",
+      "settings.advanced.tabs.directionalClosingToggle": "Tabbladen op positie sluiten",
+      "settings.advanced.tabs.doubleClickToCloseDescription": "Dubbelklik op een tabblad om het te sluiten. In een gesplitste weergave sluit alleen het aangeklikte deelvenster. Vastgemaakte tabbladen en bladwijzers behouden hun bestaande dubbelklikacties.",
+      "sidebar.tabContextMenu.closeTabsAbove": "Tabbladen erboven sluiten",
+      "sidebar.tabContextMenu.closeTabsBelow": "Tabbladen eronder sluiten",
+      "sidebar.tabContextMenu.closeTabsToLeft": "Tabbladen links sluiten",
+      "sidebar.tabContextMenu.closeTabsToRight": "Tabbladen rechts sluiten",
+      "sidebar.tabGroupContextMenu.closeTabsAbove": "Tabbladen boven de groep sluiten",
+      "sidebar.tabGroupContextMenu.closeTabsBelow": "Tabbladen onder de groep sluiten",
+      "sidebar.tabGroupContextMenu.closeTabsToLeft": "Tabbladen links van de groep sluiten",
+      "sidebar.tabGroupContextMenu.closeTabsToRight": "Tabbladen rechts van de groep sluiten",
+      "settings.advanced.tabs.doubleClickToCloseToggle": "Dubbelklik om tabbladen te sluiten"
+    }
+  }
+}

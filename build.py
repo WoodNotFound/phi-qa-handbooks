@@ -18,6 +18,7 @@ import html
 import json
 import pathlib
 import re
+import shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent
 
@@ -32,6 +33,11 @@ HANDBOOKS = [
         "mail-guard-landing",
         "落地页守卫 QA 手册",
         "邮件防护的下一步：用户点开（或复制）可疑邮件里的链接后，落地页顶部的提示条何时出现、写什么，以及测试指南与清单。",
+    ),
+    (
+        "tab-closing",
+        "标签页关闭操作手测指南",
+        "双击关闭与按位置批量关闭：三种布局、分屏、固定项、标签组、书签，以及可记录和导出的完整手测清单。",
     ),
 ]
 
@@ -134,6 +140,12 @@ def main() -> None:
         out = ROOT / name / "index.html"
         out.parent.mkdir(exist_ok=True)
         out.write_text(document(head, body), encoding="utf-8")
+
+        for fixture in sorted((source / "fixtures").glob("*.html")):
+            fixture_out = out.parent / "fixtures" / fixture.name
+            fixture_out.parent.mkdir(exist_ok=True)
+            shutil.copyfile(fixture, fixture_out)
+            print(f"copied {fixture_out.relative_to(ROOT)}")
 
         items.append(
             f'    <li><a href="{html.escape(name)}/">{html.escape(title)}</a>'

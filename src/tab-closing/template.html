@@ -1,0 +1,178 @@
+<title>标签页关闭操作手测指南 · Phi QA</title>
+<style>
+:root{--paper:#f6f7f4;--sheet:#fff;--ink:#1d2320;--soft:#526058;--rule:#dfe3dd;--wash:#edf1ec;--accent:#2f6b4f;--link:#245b83;--danger:#a12d2d;--warn:#80570c;--pass:#27643f;--focus:#146c9a;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--paper:#151917;--sheet:#1d2220;--ink:#e6ebe7;--soft:#b2beb5;--rule:#354039;--wash:#263029;--accent:#a0d0b0;--link:#9dcbe9;--danger:#ffaaaa;--warn:#e7c171;--pass:#9ddbb3;--focus:#8bceef;color-scheme:dark}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.75 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1240px;margin:auto;padding:32px 20px 80px;display:grid;grid-template-columns:210px minmax(0,1fr);gap:36px}nav.toc{position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto;border-left:2px solid var(--rule);padding-left:14px;font-size:13px}nav.toc a{display:block;padding:4px 0;text-decoration:none;color:var(--soft)}nav.toc a:hover{color:var(--link)}main{min-width:0}h1{font-family:"Songti SC",Georgia,serif;font-size:clamp(30px,4vw,43px);line-height:1.25;margin:10px 0 16px}h2{font-size:24px;line-height:1.35;margin:0 0 12px}h3{font-size:17px;margin:20px 0 8px}p{margin:10px 0}.lede{font-size:17px;color:var(--soft)}.eyebrow{color:var(--accent);font:12px ui-monospace,monospace;letter-spacing:.05em}.muted{color:var(--soft)}section{scroll-margin-top:22px;margin-top:38px;padding-top:28px;border-top:1px solid var(--rule)}a{color:var(--link)}code,.mono{font: .9em ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}code{background:var(--wash);padding:2px 5px;border-radius:4px}ul,ol{padding-left:1.5em}li{margin:5px 0}.note{border-left:3px solid var(--accent);background:var(--wash);padding:14px 16px;border-radius:0 6px 6px 0;margin:16px 0}.warning{border-left-color:var(--warn)}.panel,.case{background:var(--sheet);border:1px solid var(--rule);border-radius:9px;padding:18px;margin:14px 0}.table-wrap{overflow:auto;border:1px solid var(--rule);border-radius:8px;margin:14px 0}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 12px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}th{background:var(--wash)}tr:last-child td{border-bottom:0}button,select,input,textarea{font:inherit;color:var(--ink);background:var(--sheet);border:1px solid var(--rule);border-radius:5px}button,select{padding:7px 11px}button{cursor:pointer}button:hover{border-color:var(--accent)}button.primary{background:var(--accent);color:var(--paper);font-weight:650}button.danger{color:var(--danger)}input,textarea{padding:8px 10px;min-width:0}textarea{resize:vertical;width:100%;min-height:70px}label{font-size:13px}label.stack{display:flex;flex-direction:column;gap:5px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row.between{justify-content:space-between}.controls{position:sticky;top:0;z-index:2;background:var(--paper);padding:12px 0;border-bottom:1px solid var(--rule)}.controls label{display:flex;gap:6px;align-items:center}.search{flex:1;min-width:180px}.stats{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.stat{background:var(--sheet);border:1px solid var(--rule);padding:7px 12px;border-radius:6px;font-size:13px}.stat strong{font-size:20px;font-variant-numeric:tabular-nums;padding-right:5px}.pill{font:12px ui-monospace,monospace;display:inline-block;background:var(--wash);padding:3px 7px;border-radius:4px}.priority-P0{color:var(--danger)}.priority-P1{color:var(--warn)}.pass{color:var(--pass)}.fail{color:var(--danger)}.case[data-status="pass"]{border-left:4px solid var(--pass)}.case[data-status="fail"]{border-left:4px solid var(--danger)}.case[data-status="blocked"]{border-left:4px solid var(--warn)}.case h3{margin:0;font-size:17px}.case .pre{color:var(--soft)}.case .result-bar{border-top:1px solid var(--rule);padding-top:12px;margin-top:15px}.status-buttons{display:flex;gap:6px;flex-wrap:wrap}.status-buttons button{font-size:13px;padding:5px 9px}.status-buttons button[aria-pressed="true"]{background:var(--wash);outline:2px solid var(--accent);outline-offset:0}.case textarea{margin-top:8px}.stamp{font-size:12px;color:var(--soft);margin:7px 0}.fixture-links{display:flex;gap:8px;flex-wrap:wrap}.fixture-links a{display:inline-block;border:1px solid var(--rule);background:var(--sheet);border-radius:6px;padding:7px 12px;min-width:60px;text-align:center}details{margin:14px 0}summary{cursor:pointer;font-weight:650}pre{background:var(--wash);padding:14px;overflow:auto;border-radius:6px;font:13px/1.7 ui-monospace,monospace}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}:focus-visible{outline:3px solid var(--focus);outline-offset:3px}#message{min-height:25px;color:var(--accent)}#report-fallback{min-height:250px}progress{width:100%;height:8px;accent-color:var(--accent)}.empty{padding:24px;color:var(--soft)}[hidden]{display:none!important}
+@media(max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:20px;padding:20px 16px 60px}nav.toc{position:static;max-height:none}.controls{position:static}.case{padding:14px}.grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.wrap{display:block;max-width:none;padding:0}.toc,.controls,.result-bar,.export-actions,.fixture-links{display:none!important}.case{break-inside:avoid}body{font-size:11pt;background:#fff;color:#111}.case[hidden],section[hidden]{display:block!important}section{border-top:1px solid #888}a{color:inherit}}
+</style>
+<div class="wrap">
+<nav class="toc" aria-label="手册目录"><a href="../">← 所有 QA 手册</a><a href="#overview">功能与范围</a><a href="#setup">开测前准备</a><a href="#fixtures">测试页面生成器</a><a href="#rules">关闭规则速查</a><a href="#run">本轮记录与筛选</a><div id="section-links"></div><a href="#language">9 种语言对照</a><a href="#evidence">开发自测与未测边界</a><a href="#finish">报告与收尾</a></nav>
+<main>
+<header id="overview"><div class="eyebrow">PHI NATIVE MAC · MANUAL QA · 2026-10-30</div><h1>标签页关闭操作<br>完整手测指南</h1><p class="lede">从两个设置开关开始，逐项核对普通标签、分屏、固定项、标签组和书签。每项写明初始状态、操作和剩余集合；三种布局分别记录结果。</p><p class="muted" id="scope-count"></p><div class="note"><strong>本页是测试规范，不是全量通过报告。</strong>所有本轮结果初始为“未测”。“历史实测”只表示对应布局曾有开发自测记录，不自动替你判通过。</div><p>参考结构：<a href="https://woodnotfound.github.io/phi-watch-test-pages/qa/" target="_blank" rel="noopener">关注页面与任务汇报手测</a>。本功能主要是原生 macOS 行为，基础用例无需启动 phi-agent、数据库、Sidecar 开发服务或使用 AI。</p></header>
+<section id="setup"><h2>开测前准备</h2><ol><li><strong>先拿到正确构建。</strong>被测分支为 <code>feature/tab-close-improvements</code>。本手册对应的功能目前仍是本地未提交修改，不能仅靠获取分支名或 checkout 基线提交就假定包含完整功能。由发包人提供 app 或合入后的准确提交。</li><li>记录实际 app 路径／渠道、构建标识、macOS 和 Framework。开发自测使用 OpenSource 本地构建，Framework 为 <code>156.0.8078.52 / 8078.52</code>；这只是已用版本，不是所有版本兼容承诺。</li><li>建立 <code>TC-QA</code> 临时 Space，页面全部使用下方 fixture。<strong>pin 可能跨 Space 共用</strong>，不要直接清空 pin 区；只动带 TC- 前缀且本轮新建的测试项。</li><li>记录原布局、两个开关与快捷键。每条用例先重建初始序列，等原生列表和标题稳定再操作；不要把上一条关闭后的残留当作新基线。</li><li>标记“未保存型”的 fixture 只有在输入后才拦截离开。看到“离开确认已启用”再测。用 pin／书签输入标记和打开编号，区分“保存项还在”和“实时页面没被关”。</li></ol>
+<div class="table-wrap"><table><thead><tr><th>布局</th><th>标签栏</th><th>前方 / 后方</th></tr></thead><tbody><tr><td>Performance / 性能</td><td>侧边纵向，地址栏也在侧边</td><td>上方 / 下方</td></tr><tr><td>Balanced / 均衡</td><td>纵向，地址栏位于内容上方</td><td>上方 / 下方</td></tr><tr><td>Comfortable / 舒适</td><td>顶部水平</td><td>左侧 / 右侧</td></tr></tbody></table></div>
+<details><summary>可选：本机已有开发环境时构建</summary><p>以浏览器仓库的 <code>docs/open-source-build.md</code> 为准，先取得包含完整修改的工作区及匹配 Framework。下面只构建 app，不运行内置测试。首次开发环境所需依赖不由这条命令自动包办。</p><pre>xcodebuild -project Phi.xcodeproj \
+  -scheme PhiBrowser-OpenSource \
+  -destination 'platform=macOS,arch=arm64' \
+  -derivedDataPath build/DerivedData-TabCloseQA \
+  CODE_SIGNING_ALLOWED=NO build</pre><p>产物为 <code>build/DerivedData-TabCloseQA/Build/Products/OpenSource/Phi.app</code>。明确打开该路径，避免启动了正式版或 Canary。OpenSource 不支持 AI 的扩展用例应记“阻塞”，不要为了通过修改内部状态。</p><p id="snapshot" class="mono"></p></details>
+<p class="muted">建议分轮：冒烟集约 30–60 分钟；完整矩阵按布局分给测试人，约 4–6 小时，加上其他语言、隐身和 agent 环境准备。用时是估计，不是实测工时。</p></section>
+<section id="fixtures"><h2>测试页面生成器</h2><p>只生成普通静态网址，不替你创建标签组／分屏，也不会自动关闭任何页面。普通页带临时输入框；离开确认型页面只在输入后注册确认。</p><div class="panel"><div class="grid"><label class="stack" for="fixture-run">页面批次（仅用随机编号，不填个人信息）<input id="fixture-run" value="tc-1030" maxlength="40"></label><label class="stack" for="fixture-kind">页面类型<select id="fixture-kind"><option value="normal">普通／存活标记</option><option value="unsaved">未保存离开确认</option><option value="long">长标题</option></select></label><label class="stack" for="fixture-name">自定义标签名<input id="fixture-name" value="P" maxlength="32"></label></div><p>按 A → F 顺序逐个打开后，核对实际列表；如被浏览器插到别处，手动拖回基线。不要认为最后打开的一定排最后。</p><div id="fixture-links" class="fixture-links"></div><p><a id="custom-fixture" href="fixtures/" target="_blank" rel="noopener">打开自定义页面</a></p><label class="stack" for="fixture-url">自定义页面网址<input id="fixture-url" readonly></label><p><button id="copy-fixture" type="button">复制这个网址</button> <button id="copy-sequence" type="button">复制 A–F 全部网址</button></p></div>
+<div class="note">初始序列记法：<code>A | S[B+C] | D</code> 表示普通 A、一个 B/C 合并分屏项、普通 D。<code>G[B,C,D]</code> 表示标签组成员；<code>P</code> 表示测试 pin；<code>M</code> 表示保存书签。页面内部的左右／上下分屏不决定标签栏方向。</div></section>
+<section id="rules"><h2>关闭规则速查</h2><div class="table-wrap"><table><thead><tr><th>对象</th><th>方向关闭 / 关闭其他</th><th>单页或显式操作</th></tr></thead><tbody><tr><td>普通 tab</td><td>当前窗口、当前 Space；按真实可见顺序计算，右键页为锚点</td><td>双击是否关闭由独立开关控制</td></tr><tr><td>普通 split</td><td>锚点保留两边；目标关闭两边</td><td>双击某半格只关该页；另一页转为单页</td></tr><tr><td>Pin / pinned split</td><td>整体保护；自己的菜单没有方向项</td><td>已有显式关闭只关实时页面，保存项仍在</td></tr><tr><td>组内 tab</td><td>可以跨组计算；仅关闭落入范围的成员</td><td>组名、颜色及剩余成员保留</td></tr><tr><td>组标题 / 折叠组</td><td>整组是保留边界；折叠不改变成员参与范围</td><td>最后成员关闭沿用现有组确认；没有“自动保存空组”的新承诺</td></tr><tr><td>纵向书签区绑定页</td><td>页面和保存项都保护；split bookmark 两页保护</td><td>保存项不作为普通列表方向锚点</td></tr><tr><td>水平栏中的书签打开页</td><td>作为普通页参与；目标 split 整对关闭</td><td>关闭页面不删除保存的书签或文件夹</td></tr></tbody></table></div><p><strong>两个开关：</strong>“双击关闭标签页”默认关；“按位置批量关闭标签页”默认开。后者关闭时，隐藏普通及组方向项，方向快捷键不执行；已有“关闭其他标签页”仍可用。两个开关对同一 app 的窗口／Space 生效，不是每个标签单独设置。</p><div class="note warning"><strong>取消不等于全批回滚。</strong>网页 beforeunload 或组确认可能让部分目标保留，而其他目标已经关闭。判定每个页面的实际结果。永久删除组仅用明确可丢弃的 TC-G，由测试人核对后确认，不勾选“不再询问”。</div></section>
+<section id="run"><h2>本轮记录与筛选</h2><div class="grid" id="metadata"><label class="stack">测试人<input data-meta="tester" placeholder="昵称即可"></label><label class="stack">本轮编号<input data-meta="run" placeholder="例如 tc-close-20261030-01"></label><label class="stack">实际构建标识<input data-meta="build" placeholder="发包号／准确提交／工作区快照"></label><label class="stack">app 渠道与版本<input data-meta="app" placeholder="OpenSource / Canary / 正式版 + 版本"></label><label class="stack">macOS / 芯片<input data-meta="os" placeholder="版本 / Apple Silicon 或 Intel"></label><label class="stack">Framework 版本<input data-meta="framework" placeholder="版本 + build"></label></div><p class="muted">所有记录只存本浏览器，不自动上传 GitHub、发送给他人或同步到其他设备。构建标识改变后，旧构建记录会作为未测显示；先导出再开始新轮。</p><div id="storage-warning" class="note warning" hidden></div><div id="stats" class="stats" aria-live="polite"></div><progress id="progress" max="1" value="0" aria-label="已执行比例"></progress>
+<div class="controls"><div class="row"><label>布局<select id="layout-filter"><option value="all">全部布局</option><option value="performance">Performance / 性能</option><option value="balanced">Balanced / 均衡</option><option value="comfortable">Comfortable / 舒适</option><option value="once">仅通用项</option></select></label><label>优先级<select id="priority-filter"><option value="all">全部</option><option value="P0">仅 P0</option><option value="P01">P0 + P1</option></select></label><label>结果<select id="status-filter"><option value="all">全部</option><option value="open">未测 / 失败 / 阻塞</option><option value="todo">仅未测</option><option value="fail">仅失败</option><option value="blocked">仅阻塞</option><option value="pass">仅通过</option><option value="skip">仅跳过</option></select></label><label><input type="checkbox" id="smoke-filter">冒烟集</label><input id="search" class="search" aria-label="搜索用例" placeholder="搜索编号、pin、分屏…"></div><p id="visible-count" class="muted"></p><div class="row export-actions"><button id="copy-report" type="button">复制完整 Markdown 结果</button><button id="download-report" type="button">下载 Markdown</button><button id="export-json" type="button">导出 JSON 备份</button><button id="reset" class="danger" type="button">清空本手册记录</button></div><div id="message" role="status" aria-live="polite"></div></div>
+<textarea id="report-fallback" hidden readonly aria-label="待手动复制的报告"></textarea></section>
+<noscript><p class="note warning">本手册需要 JavaScript 显示清单与本地记录；请启用脚本，或查看仓库 src/tab-closing/rules.json 中的完整用例。</p></noscript>
+<div id="checklist"></div>
+<section id="language"><h2>9 种语言文案对照</h2><p>同一语言至少查看普通菜单和组标题菜单，并切换一次纵向／水平布局。下表来自本批资源；资源存在不代替界面检查。</p><label>语言 <select id="language-select"><option value="zh-Hans">简体中文</option><option value="zh-Hant">繁體中文</option><option value="en">English</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option><option value="nl">Nederlands</option></select></label><div class="table-wrap"><table><thead><tr><th>位置</th><th>预期文案</th></tr></thead><tbody id="language-rows"></tbody></table></div></section>
+<section id="evidence"><h2>开发自测与未测边界</h2><p>已有开发自测是 2026-10-30 在本地 OpenSource 构建上用 Computer Use 操作原生 UI：三种布局、非当前锚点、普通及组内分屏、pin、折叠组、书签保存项、beforeunload 取消与确认、普通页撤销关闭、原生拖动顺序、多选关闭其他、开关独立性和保存，以及简体中文设置／纵向菜单。没有运行内置测试套件。</p><p>当前证据<strong>不覆盖</strong>整组永久删除的确认执行及组恢复、所有语言 UI、agent 控制、隐身、跨窗口／Space、配置快捷键、失效菜单竞态。书签保存项留存不等于所有场景都已验证实时页面身份；本指南补充了输入标记验证。</p><p>带“历史实测”的用例只映射已有相同布局记录；这里的步骤可能比历史操作更完整，仍须重新执行。所有本轮结果从未测开始。</p></section>
+<section id="finish"><h2>报告与收尾</h2><ol><li>所有本轮可执行 P0 必须通过。失败、阻塞、未测均不能计为通过；不具备官方功能环境的扩展项说明前置条件缺失。</li><li>失败至少记录：用例 ID、布局、构建、两个开关值、初始顺序、活动页、右键对象、操作、预期／实际剩余集合、对话框选择及截图。崩溃另附发生时间和系统崩溃记录，先去除私人网址和账号。</li><li>导出 JSON 备份和 Markdown。导出包含全部记录，不随当前筛选隐藏失败；无备注的失败／阻塞会在报告中提示补全。</li><li>恢复布局、开关及快捷键；只取消测试新增 pin。逐一核对后清理临时组／书签／窗口。不要删除真实组，不要清空整个浏览数据。</li></ol><p><a href="https://github.com/WoodNotFound/phi-qa-handbooks/tree/main/src/tab-closing" target="_blank" rel="noopener">手册源文件</a> · <a href="https://github.com/WoodNotFound/phi-qa-handbooks" target="_blank" rel="noopener">手册仓库</a></p></section>
+</main></div>
+<script id="handbook-data" type="application/json">__RULES__</script>
+<script>
+(() => {
+  'use strict';
+  const spec = JSON.parse(document.getElementById('handbook-data').textContent);
+  const STORAGE_KEY = 'phi-qa-tab-closing-v1';
+  const layoutNames = {once:'通用',performance:'Performance / 性能',balanced:'Balanced / 均衡',comfortable:'Comfortable / 舒适'};
+  const layoutCodes = {once:'COMMON',performance:'PER',balanced:'BAL',comfortable:'COM'};
+  const statuses = {todo:'未测',pass:'通过',fail:'失败',blocked:'阻塞',skip:'跳过'};
+  const smokeIds = new Set(['ENV-01','ENV-02','ENV-03','SET-01','SET-03','SET-05','DBL-02','DBL-04','POS-03','SPL-03','PIN-02','GRP-05','BMK-04','LIFE-01','VIS-05']);
+  const smokeHorizontal = new Set(['SET-03','DBL-02','POS-03','SPL-03','BMK-04']);
+  let saved = {};
+  let storageError = '';
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (error) { storageError = '无法读取本地记录。当前仍可测试，请及时导出，避免刷新后丢失。'; }
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) saved = {};
+  const state = {meta:{},results:{}};
+  const metaKeys = ['tester','run','build','app','os','framework'];
+  for (const key of metaKeys) state.meta[key] = typeof saved.meta?.[key] === 'string' ? saved.meta[key].slice(0,400) : '';
+  const units = [];
+  for (const group of spec.sections) for (const item of group.cases) for (const layout of item.layouts) for (const language of (item.languages || [''])) {
+    const key = item.id + '-' + layoutCodes[layout] + (language ? '-' + language : '');
+    const old = saved.results?.[key];
+    if (old && Object.hasOwn(statuses,old.status)) state.results[key] = {status:old.status,note:typeof old.note === 'string' ? old.note.slice(0,12000) : '',at:typeof old.at === 'string' ? old.at : '',build:typeof old.build === 'string' ? old.build : ''};
+    units.push({...item,key,layout,language,group:group.id,smoke:smokeIds.has(item.id) && (layout === 'once' || layout === 'performance' || (layout === 'comfortable' && smokeHorizontal.has(item.id)))});
+  }
+  const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const message = text => { document.getElementById('message').textContent = text; };
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({schemaVersion:1,revision:spec.revision,...state})); }
+    catch (error) { storageError = '当前浏览器无法保存本地记录。先导出 JSON；刷新或关闭页面可能丢失本轮结果。'; }
+    const warning = document.getElementById('storage-warning');
+    warning.hidden = !storageError;
+    warning.textContent = storageError;
+  }
+  function result(unit) {
+    const record = state.results[unit.key];
+    return record && record.build === state.meta.build ? record.status : 'todo';
+  }
+  function direction(text, layout) {
+    return text.replaceAll('{before}',layout === 'comfortable' ? '关闭左侧标签页' : '关闭上方标签页').replaceAll('{after}',layout === 'comfortable' ? '关闭右侧标签页' : '关闭下方标签页');
+  }
+  const elements = new Map();
+  const sectionElements = new Map();
+  const checklist = document.getElementById('checklist');
+  const toc = document.getElementById('section-links');
+  function list(items, layout) { return '<ol>' + items.map(text => '<li>' + escape(direction(text,layout)) + '</li>').join('') + '</ol>'; }
+  for (const group of spec.sections) {
+    const anchor = document.createElement('a'); anchor.href = '#sec-' + group.id; anchor.textContent = group.id + ' ' + group.title; toc.append(anchor);
+    const section = document.createElement('section'); section.id = 'sec-' + group.id;
+    section.innerHTML = '<h2>' + escape(group.id + ' ' + group.title) + '</h2><p class="muted">' + escape(group.summary) + '</p>';
+    sectionElements.set(group.id,section); checklist.append(section);
+    for (const unit of units.filter(item => item.group === group.id)) {
+      const article = document.createElement('article'); article.className = 'case'; article.id = unit.key;
+      const observed = unit.observed.includes(unit.layout);
+      article.innerHTML = '<div class="row between"><div class="row"><a class="mono" href="#' + unit.key + '">' + unit.key + '</a><span class="pill priority-' + unit.priority + '">' + unit.priority + '</span><span class="pill">' + escape(layoutNames[unit.layout] + (unit.language ? ' · ' + unit.language : '')) + '</span>' + (observed ? '<span class="pill">历史实测 · 非本轮结果</span>' : '') + '</div></div><h3>' + escape(unit.title) + '</h3><p class="pre"><strong>前置：</strong>' + escape(direction(unit.pre,unit.layout)) + '</p><h4>步骤</h4>' + list(unit.steps,unit.layout) + '<h4>预期</h4>' + list(unit.expected,unit.layout) + '<details><summary>重置与证据要求</summary><p><strong>重置：</strong>' + escape(unit.reset) + '</p><p><strong>证据：</strong>' + escape(unit.evidence) + '</p></details><div class="result-bar"><div class="status-buttons" role="group" aria-label="' + unit.key + ' 结果">' + Object.entries(statuses).map(([value,label]) => '<button type="button" data-result="' + value + '" aria-pressed="false">' + label + '</button>').join('') + '</div><label class="sr-only" for="note-' + unit.key + '">' + unit.key + ' 备注</label><textarea id="note-' + unit.key + '" maxlength="12000" placeholder="失败／阻塞请写：开关、初始顺序、活动页、右键对象、实际剩余集合、对话框选择和截图文件名。"></textarea><p class="stamp"></p></div>';
+      const note = article.querySelector('textarea'); note.value = state.results[unit.key]?.note || '';
+      note.addEventListener('input',() => { const previous = state.results[unit.key] || {status:'todo',build:state.meta.build}; state.results[unit.key] = {...previous,note:note.value,at:new Date().toISOString()}; save(); });
+      article.querySelectorAll('[data-result]').forEach(button => button.addEventListener('click',() => {
+        if (!state.meta.build.trim() && button.dataset.result !== 'todo') { message('先填写“实际构建标识”，再记录结果，避免把不同构建的测试混在一起。'); document.querySelector('[data-meta="build"]').focus(); return; }
+        state.results[unit.key] = {status:button.dataset.result,note:note.value,at:new Date().toISOString(),build:state.meta.build}; save(); update();
+      }));
+      elements.set(unit.key,article); section.append(article);
+    }
+  }
+  function matches(unit) {
+    const layout = document.getElementById('layout-filter').value;
+    const priority = document.getElementById('priority-filter').value;
+    const status = document.getElementById('status-filter').value;
+    const query = document.getElementById('search').value.trim().toLocaleLowerCase();
+    const actual = result(unit);
+    return (layout === 'all' || unit.layout === layout || (layout !== 'once' && unit.layout === 'once')) &&
+      (priority === 'all' || unit.priority === priority || (priority === 'P01' && unit.priority !== 'P2')) &&
+      (status === 'all' || actual === status || (status === 'open' && ['todo','fail','blocked'].includes(actual))) &&
+      (!document.getElementById('smoke-filter').checked || unit.smoke) &&
+      (!query || [unit.key,unit.title,unit.pre,unit.language,...unit.steps,...unit.expected].join(' ').toLocaleLowerCase().includes(query));
+  }
+  function update() {
+    const counts = {todo:0,pass:0,fail:0,blocked:0,skip:0};
+    let visible = 0, p0Open = 0;
+    const groups = new Set();
+    for (const unit of units) {
+      const actual = result(unit); counts[actual]++;
+      if (unit.priority === 'P0' && actual !== 'pass') p0Open++;
+      const element = elements.get(unit.key); element.dataset.status = actual;
+      element.querySelectorAll('[data-result]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.result === actual)));
+      const old = state.results[unit.key];
+      element.querySelector('.stamp').textContent = old ? (old.build !== state.meta.build ? '旧构建记录（当前按未测）：' : '记录时间：') + (old.at ? new Date(old.at).toLocaleString() : '—') + ' · ' + (old.build || '未填构建') : '本轮未测';
+      element.hidden = !matches(unit); if (!element.hidden) {visible++;groups.add(unit.group);}
+    }
+    for (const [id,element] of sectionElements) element.hidden = !groups.has(id);
+    document.getElementById('stats').innerHTML = '<span class="stat"><strong>' + units.length + '</strong>全部执行点</span>' + Object.entries(counts).map(([value,count]) => '<span class="stat ' + value + '"><strong>' + count + '</strong>' + statuses[value] + '</span>').join('') + '<span class="stat"><strong>' + p0Open + '</strong>P0 尚未通过</span>';
+    document.getElementById('progress').max = units.length; document.getElementById('progress').value = units.length - counts.todo;
+    document.getElementById('visible-count').textContent = '当前筛选显示 ' + visible + ' / ' + units.length + ' 项；上方计数和导出始终包含全量。冒烟集 ' + units.filter(unit => unit.smoke).length + ' 项。';
+    for (const anchor of toc.querySelectorAll('a')) { const id = anchor.getAttribute('href').replace('#sec-',''); anchor.setAttribute('aria-disabled',String(!groups.has(id))); }
+  }
+  for (const input of document.querySelectorAll('[data-meta]')) {
+    input.value = state.meta[input.dataset.meta]; input.maxLength = 400;
+    input.addEventListener('input',() => { state.meta[input.dataset.meta] = input.value; save(); update(); });
+  }
+  ['layout-filter','priority-filter','status-filter','smoke-filter'].forEach(id => document.getElementById(id).addEventListener('change',update));
+  document.getElementById('search').addEventListener('input',update);
+  function report() {
+    const counts = {todo:0,pass:0,fail:0,blocked:0,skip:0}; for (const unit of units) counts[result(unit)]++;
+    let text = '# Phi 标签页关闭操作手测报告\n\n手册版本：' + spec.revision + '\n导出时间：' + new Date().toISOString() + '\n';
+    for (const key of metaKeys) text += key + '：' + (state.meta[key] || '未填写') + '\n';
+    text += '\n全量 ' + units.length + ' 项；' + Object.entries(counts).map(([key,value]) => statuses[key] + ' ' + value).join(' / ') + '\n\n';
+    const p0 = units.filter(unit => unit.priority === 'P0' && result(unit) !== 'pass');
+    text += '尚未通过的 P0：' + (p0.map(unit => unit.key + '（' + statuses[result(unit)] + '）').join('、') || '无') + '\n\n';
+    for (const unit of units) {
+      const record = state.results[unit.key]; const actual = result(unit);
+      text += '## ' + unit.key + ' ' + unit.title + '\n- 优先级：' + unit.priority + '\n- 布局：' + layoutNames[unit.layout] + (unit.language ? '；语言：' + unit.language : '') + '\n- 结果：' + statuses[actual] + '\n';
+      if (record) text += '- 记录构建：' + (record.build || '未填写') + '\n- 时间：' + (record.at || '—') + '\n';
+      text += '- 备注：' + (record?.note || (['fail','blocked'].includes(actual) ? '【请补充失败／阻塞证据】' : '—')) + '\n\n';
+    }
+    return text;
+  }
+  function download(name,content,type) { const url = URL.createObjectURL(new Blob([content],{type})); const anchor = document.createElement('a'); anchor.href = url; anchor.download = name; document.body.append(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url),1000); }
+  async function copy(text) { try { await navigator.clipboard.writeText(text); message('已复制。内容包含全量记录，不受筛选影响。'); } catch (error) { const fallback = document.getElementById('report-fallback'); fallback.hidden = false; fallback.value = text; fallback.focus(); fallback.select(); message('自动复制不可用，已显示文本，请手动复制。'); } }
+  document.getElementById('copy-report').addEventListener('click',() => copy(report()));
+  document.getElementById('download-report').addEventListener('click',() => download('phi-tab-closing-report.md',report(),'text/markdown;charset=utf-8'));
+  document.getElementById('export-json').addEventListener('click',() => download('phi-tab-closing-results.json',JSON.stringify({schemaVersion:1,revision:spec.revision,exportedAt:new Date().toISOString(),meta:state.meta,results:state.results},null,2),'application/json'));
+  document.getElementById('reset').addEventListener('click',() => {
+    if (!confirm('只清空本手册在此浏览器里的本轮结果和备注，操作无法撤销。请先导出 JSON 备份。继续吗？')) return;
+    state.results = {}; for (const element of elements.values()) element.querySelector('textarea').value = ''; save(); update(); message('已清空本轮结果，环境信息保留。');
+  });
+  function fixtureURL(name) { const url = new URL('fixtures/',location.href); url.searchParams.set('tab',name); url.searchParams.set('run',document.getElementById('fixture-run').value || 'manual'); url.searchParams.set('kind',document.getElementById('fixture-kind').value); return url.href; }
+  function updateFixtures() {
+    const container = document.getElementById('fixture-links'); container.replaceChildren();
+    for (const name of ['A','B','C','D','E','F','P','Q','M','N']) { const link = document.createElement('a'); link.href = fixtureURL(name); link.target = '_blank'; link.rel = 'noopener'; link.textContent = name; link.setAttribute('aria-label','打开测试页 ' + name); container.append(link); }
+    const custom = fixtureURL(document.getElementById('fixture-name').value || 'P'); document.getElementById('custom-fixture').href = custom; document.getElementById('fixture-url').value = custom;
+  }
+  ['fixture-run','fixture-kind','fixture-name'].forEach(id => document.getElementById(id).addEventListener('input',updateFixtures));
+  document.getElementById('copy-fixture').addEventListener('click',() => copy(document.getElementById('fixture-url').value));
+  document.getElementById('copy-sequence').addEventListener('click',() => copy(['A','B','C','D','E','F'].map(fixtureURL).join('\n')));
+  const labelNames = {doubleClickToCloseToggle:'双击开关',doubleClickToCloseDescription:'双击说明',directionalClosingToggle:'位置关闭开关',directionalClosingDescription:'位置关闭说明',closeTabsAbove:'普通：上方',closeTabsBelow:'普通：下方',closeTabsToLeft:'普通：左侧',closeTabsToRight:'普通：右侧'};
+  function updateLanguage() {
+    const locale = document.getElementById('language-select').value; const body = document.getElementById('language-rows'); body.replaceChildren();
+    for (const [key,value] of Object.entries(spec.labels[locale])) { const row = document.createElement('tr'); const purpose = document.createElement('td'); const text = document.createElement('td'); const leaf = key.split('.').pop(); purpose.textContent = (key.includes('tabGroupContextMenu') ? '组标题：' + (labelNames[leaf] || leaf).replace('普通：','') : (labelNames[leaf] || leaf)); text.textContent = value; row.append(purpose,text); body.append(row); }
+  }
+  document.getElementById('language-select').addEventListener('change',updateLanguage);
+  document.getElementById('scope-count').textContent = spec.sections.reduce((sum,group) => sum + group.cases.length,0) + ' 条基础用例 · ' + units.length + ' 个独立执行点（按布局／语言展开）· P0 必测 / P1 完整回归';
+  document.getElementById('snapshot').textContent = '编写依据：' + spec.source.branch + '；基线 ' + spec.source.base.slice(0,12) + '；本地 Sources/Resources diff SHA-256 ' + spec.source.workingDiffSha256 + '。这不是已发布功能提交号。';
+  save(); updateFixtures(); updateLanguage(); update();
+})();
+</script>

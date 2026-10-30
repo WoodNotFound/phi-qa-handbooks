@@ -7,6 +7,7 @@ page is `noindex`).
 | Handbook | Page | Source |
 | --- | --- | --- |
 | Mail guard (Kensington), in Chinese | [`mail-guard/`](https://woodnotfound.github.io/phi-qa-handbooks/mail-guard/) | `src/mail-guard/` |
+| Tab closing operations, in Chinese | [`tab-closing/`](https://woodnotfound.github.io/phi-qa-handbooks/tab-closing/) | `src/tab-closing/` |
 
 ## Updating a handbook
 
@@ -14,6 +15,11 @@ page is `noindex`).
 2. Run `python3 build.py`. It writes `<name>/index.html` for the site, `index.html`, and
    `dist/<name>.artifact.html` (not committed).
 3. Commit and push; Pages rebuilds in a minute or two.
+
+Handbooks may include standalone HTML test pages in `src/<name>/fixtures/`. The build copies them
+to `<name>/fixtures/`. Tab-closing fixtures accept `tab`, `run`, and `kind` (`normal`, `unsaved`,
+or `long`) query parameters. They make no API requests and never close browser tabs automatically.
+The handbook stores manual results locally; export a report before switching builds or clearing data.
 
 The mail guard handbook also has a private claude.ai copy,
 https://claude.ai/artifact/HBKwHhxprqCSD8U8g5QN4y, republished from `dist/mail-guard.artifact.html`.
