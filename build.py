@@ -85,6 +85,53 @@ def document(head: str, body: str) -> str:
 """
 
 
+def manual_markdown(spec: dict) -> str:
+    """Renders the tab-closing case specification without browser scripting."""
+    layouts = {"once": "通用", "performance": "Performance / 性能",
+               "balanced": "Balanced / 均衡", "comfortable": "Comfortable / 舒适"}
+    codes = {"once": "COMMON", "performance": "PER", "balanced": "BAL", "comfortable": "COM"}
+    lines = [f"# {spec['title']}", "", f"手册修订：{spec['revision']}", "",
+             "本文件是完整手测规范，所有结果初始为未测；不是全量通过报告。",
+             "在线操作说明与对象搭建：https://woodnotfound.github.io/phi-qa-handbooks/tab-closing/", "",
+             "每轮记录测试人、本轮编号、实际构建、渠道、macOS/芯片及 Framework；每个支持环境单独建报告。",
+             "只操作 TC- 可丢弃页面、组、pin 和书签；保护项核对输入标记及本次打开编号。",
+             "普通序列 A→F 以真实原生顺序为准；S[B+C] 为分屏，G[B,C] 为组。",
+             "双击默认关、位置关闭默认开；两个开关独立。性能/均衡上下，舒适左右。",
+             "方向与关闭其他保护整个 split；双击只关点击的一侧。pin 和纵向绑定书签页受保护。",
+             "beforeunload 与组确认可以部分完成；取消文档必须存活，不承诺整批回滚。",
+             "P0 适用项全部通过；P1 完整回归无未处理失败；P2 缺失前置和探索标准必须说明。",
+             "探索项未有产品判定标准时记阻塞；跳过不等于通过。收尾恢复配置，仅清理本轮资料。", "",
+             f"功能分支：{spec['source']['branch']}；状态：{spec['source']['status']}",
+             f"Sources/Resources diff SHA-256：{spec['source']['workingDiffSha256']}", "",
+             "## 覆盖矩阵", ""]
+    for row in spec["coverage"]:
+        lines.extend([f"- **{row['dimension']}**：{row['scope']}。用例：{'、'.join(row['cases'])}"])
+    for section in spec["sections"]:
+        lines.extend(["", f"## {section['id']} {section['title']}", "", section["summary"], ""])
+        for case in section["cases"]:
+            for layout in case["layouts"]:
+                def direction(value: str) -> str:
+                    return value.replace("{before}", "关闭左侧标签页" if layout == "comfortable" else "关闭上方标签页").replace("{after}", "关闭右侧标签页" if layout == "comfortable" else "关闭下方标签页")
+                for language in case.get("languages", [""]):
+                    for variant in case.get("variants", [{"id": "", "label": ""}]):
+                        key = case["id"] + "-" + codes[layout] + ("-" + language if language else "") + ("-" + variant["id"] if variant["id"] else "")
+                        lines.extend([f"### {key} {case['title']}", "",
+                                      f"优先级：{case['priority']}；布局：{layouts[layout]}；语言：{language or '按本轮环境'}；变体：{variant['label'] or '无'}",
+                                      "类型：" + ("探索／待定标准" if case["kind"] == "exploratory" else "验收／回归"), "",
+                                      "前置：" + direction(case["pre"]), "", "步骤：", ""])
+                        lines.extend(f"{index}. {direction(step)}" for index, step in enumerate(case["steps"], 1))
+                        lines.extend(["", "预期：", ""])
+                        lines.extend(f"- {direction(item)}" for item in case["expected"])
+                        lines.extend(["", "重置：" + case["reset"], "证据：" + case["evidence"],
+                                      "", "结果：未测；备注：", ""])
+    lines.extend(["## 9 种语言文案对照", ""])
+    for locale, labels in spec["labels"].items():
+        lines.extend([f"### {locale}", ""])
+        lines.extend(f"- `{key}`：{value}" for key, value in labels.items())
+        lines.append("")
+    return "\n".join(lines)
+
+
 INDEX = """<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -132,7 +179,7 @@ def main() -> None:
         rules = (source / "rules.json").read_text(encoding="utf-8").strip()
         if template.count("__RULES__") != 1:
             raise SystemExit(f"{name}: template must hold __RULES__ exactly once")
-        json.loads(rules)
+        spec = json.loads(rules)
         page = template.replace("__RULES__", rules)
 
         (ROOT / "dist" / f"{name}.artifact.html").write_text(page, encoding="utf-8")
@@ -140,6 +187,8 @@ def main() -> None:
         out = ROOT / name / "index.html"
         out.parent.mkdir(exist_ok=True)
         out.write_text(document(head, body), encoding="utf-8")
+        if name == "tab-closing":
+            (out.parent / "handbook.md").write_text(manual_markdown(spec), encoding="utf-8")
 
         for fixture in sorted((source / "fixtures").glob("*.html")):
             fixture_out = out.parent / "fixtures" / fixture.name

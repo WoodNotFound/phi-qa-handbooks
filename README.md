@@ -19,7 +19,8 @@ page is `noindex`).
 Handbooks may include standalone HTML test pages in `src/<name>/fixtures/`. The build copies them
 to `<name>/fixtures/`. Tab-closing fixtures accept `tab`, `run`, and `kind` (`normal`, `unsaved`,
 or `long`) query parameters. They make no API requests and never close browser tabs automatically.
-The handbook stores manual results locally; export a report before switching builds or clearing data.
+The handbook stores manual results locally; export a report before switching builds, runs, revisions, or clearing data.
+The tab-closing build also writes `tab-closing/handbook.md`: all execution points with their steps and expected results, readable without JavaScript.
 
 The mail guard handbook also has a private claude.ai copy,
 https://claude.ai/artifact/HBKwHhxprqCSD8U8g5QN4y, republished from `dist/mail-guard.artifact.html`.

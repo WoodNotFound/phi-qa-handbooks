@@ -17,11 +17,32 @@
 <h1 id="heading">正在准备测试页</h1>
 <div class="panel"><div>批次：<code id="run"></code></div><div>本次打开编号：<code id="instance"></code></div><div>页面类型：<strong id="kind"></strong></div><p id="armed" role="status">普通页面：输入不会阻止离开。</p></div>
 <div class="panel"><label for="draft">存活标记／临时草稿</label><p class="muted">输入例如 KEEP-P-731。切回被保护的 pin／书签时，文字和打开编号都应保持。这里不使用自动保存；不要填写真实信息。</p><textarea id="draft" placeholder="输入可丢弃的测试标记"></textarea><p><button id="disarm" type="button" hidden>停用本页离开确认</button></p></div>
+<div class="panel"><h2>可选：媒体和下载回归</h2><p class="muted">仅点击后开始低音量测试音，不申请麦克风权限。小文本下载用于下载 UI 回归；持续下载／关闭确认需要另备获准的慢速测试文件，不能用瞬间完成的小文件声称覆盖。</p><button id="audio" type="button">开始测试音</button> <button id="download" type="button">下载可丢弃测试文本</button><p id="audio-status" role="status">测试音未启动。</p></div>
 <details><summary>判定说明</summary><p>普通页不会拦截关闭。未保存型页面在你真正输入后才启用 beforeunload；浏览器决定离开提示的具体文案。必须先看到“离开确认已启用”，再做关闭测试。</p><p>保存项仍在不代表实时页面没被关过：对照临时草稿和本次打开编号。撤销关闭后浏览器可能恢复表单或重建文档；恢复用例不要求打开编号不变。</p><p>本页不能替你创建 pin、分屏或标签组，也不会自动关闭任何浏览器页面。所有原生操作都由测试人完成。</p></details>
 </main>
 <script>
 (() => {
   'use strict';
+  let audioContext = null;
+  const audioButton = document.getElementById('audio');
+  const audioStatus = document.getElementById('audio-status');
+  audioButton.addEventListener('click', async () => {
+    try {
+      if (audioContext) { await audioContext.close(); audioContext = null; audioButton.textContent = '开始测试音'; audioStatus.textContent = '测试音已停止。'; return; }
+      audioContext = new AudioContext();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain(); gain.gain.value = 0.015;
+      oscillator.frequency.value = 220; oscillator.connect(gain); gain.connect(audioContext.destination);
+      await audioContext.resume(); oscillator.start();
+      audioButton.textContent = '停止测试音'; audioStatus.textContent = '低音量测试音正在播放；可查看原生 tab 音频／静音控件。';
+    } catch (error) { if (audioContext) { audioContext.close(); audioContext = null; } audioStatus.textContent = '此环境无法启动音频，请记录前置限制。'; }
+  });
+  window.addEventListener('pagehide', () => { if (audioContext) audioContext.close(); });
+  document.getElementById('download').addEventListener('click', () => {
+    const url = URL.createObjectURL(new Blob(['Disposable Phi tab closing QA fixture.\n'], {type:'text/plain;charset=utf-8'}));
+    const link = document.createElement('a'); link.href = url; link.download = 'TC-disposable-download.txt';
+    document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url),1000);
+  });
   const query = new URLSearchParams(location.search);
   const label = (query.get('tab') || 'A').slice(0,48);
   const run = (query.get('run') || 'manual').slice(0,48);
