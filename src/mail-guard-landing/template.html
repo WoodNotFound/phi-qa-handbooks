@@ -128,7 +128,7 @@ footer { color: var(--ink-faint); font-size: 13px; padding-top: 28px; }
   <div class="eyebrow">Kensington · 邮件防护 · 落地页守卫 · QA</div>
   <h1>落地页守卫 QA 手册</h1>
   <p class="lede">邮件防护已经提示了「这封邮件很可疑」，用户还是从邮件页点开了里面的链接（或者把地址粘贴到邮件所在的标签页打开）。落地页守卫会跟着用户到那封邮件引向的页面，在<b>页面顶部挂一条红色提示条</b>，说明这个页面是从可疑邮件打开的、它真实的网站是哪个。它只提醒，不拦截：没有确认页、遮罩、下载暂停或补救卡片（2026-10-28 决定只保留提示条）。离开邮件页后再去同一个网站，比如从 Google 搜索进去，不算从邮件打开，不提示（2026-11-03 决定）。这份手册讲它什么时候出现、按什么规则判断，以及每一项怎么测、怎样算通过。</p>
-  <p>依据 phi-ai <code>fix/mail-guard-landing-from-mail-only</code> @ <code>e43be05ea</code>（2026-11-03，尚未合入 staging）逐条核对，以代码为准。没有这个提交的 Kensington，LG-12、13、17～21 的结果会和这里不同。</p>
+  <p>依据 phi-ai <code>fix/mail-guard-landing-from-mail-only</code> @ <code>73e1fcc95</code>（2026-11-03，PR #676，尚未合入 staging）逐条核对，以代码为准。没有这个提交的 Kensington，LG-12、13、17～21 的结果会和这里不同。</p>
   <div class="facts">
     <div class="fact"><b>1</b><span>种提示：页面顶部的提示条</span></div>
     <div class="fact"><b>7 天</b><span>可疑邮件的链接在本机记住多久</span></div>
@@ -242,6 +242,7 @@ flowchart TD
   <h2>不会提示的情况</h2>
   <ul>
     <li>低风险邮件、终审判为正常的邮件、最后只留标签的邮件里的链接。</li>
+    <li>信任名单里验证没有明确失败的发件人，其邮件不留记录；只有致命规则才会记。</li>
     <li>不是邮件页发起的访问：搜索结果、其他网页的链接、书签、粘贴到其他标签页、从别的应用打开，哪怕这个网站在记录里。</li>
     <li>品牌表里品牌自己的普通域名（但链路经过记录里的地址时，提示条照样出现）。</li>
     <li>用户自己去往记录之外的网站之后。</li>
@@ -310,7 +311,7 @@ flowchart TD
   <div id="checklist"></div>
 </section>
 
-<footer>依据 phi-ai <code>fix/mail-guard-landing-from-mail-only</code> @ <code>e43be05ea</code>（2026-11-03，基于 PR #674）；中文界面文字以 10-29 的正式翻译为准（PR #664）。代码位置：扩展 <code>ai-extension/kensington/src/background/landing/</code>、<code>ai-extension/kensington/src/mail-guard/landing/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>（<code>landing-route.ts</code>），说明 <code>docs/kensington-mail-guard.md</code>「Pages a risky email leads to」一节。</footer>
+<footer>依据 phi-ai <code>fix/mail-guard-landing-from-mail-only</code> @ <code>73e1fcc95</code>（2026-11-03，基于 PR #674）；中文界面文字以 10-29 的正式翻译为准（PR #664）。代码位置：扩展 <code>ai-extension/kensington/src/background/landing/</code>、<code>ai-extension/kensington/src/mail-guard/landing/</code>，服务端 <code>phi-agent-dsh/plugins/mail</code>（<code>landing-route.ts</code>），说明 <code>docs/kensington-mail-guard.md</code>「Pages a risky email leads to」一节。</footer>
 </main>
 </div>
 
