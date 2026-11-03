@@ -190,7 +190,7 @@ flowchart TD
   <div class="grid2">
     <div class="card"><h4>静态检查（静态规则）</h4><p>在浏览器里跑，不联网、结果确定。看发件人身份、认证结果、链接、附件、会话。只有足够严重的发现才会定等级（保底），其余只列给用户看、交给模型权衡。</p></div>
     <div class="card"><h4>Jev 快速检查（LLM）</h4><p>每封打开的邮件都会调用（信任名单里验证没有明确失败的发件人除外）。一次回答 28 个问题：风险 5 档评分、9 种攻击类别、17 种话术主题、是不是广告。它单独最多把邮件判到「可疑」。</p></div>
-    <div class="card"><h4>终审（LLM）</h4><p>只在等级达到「需留意」及以上时调用。读整封邮件（含完整正文、链接、附件名、静态检查的发现和 Jev 的答案），给出结论和理由；它的结论取代 Jev 的读数。只有它能把等级抬到「高风险」（静态检查保底除外）。</p></div>
+    <div class="card"><h4>终审（LLM）</h4><p>只在等级达到「需留意」及以上时调用。读整封邮件（含完整正文、链接、附件名、静态检查的发现和 Jev 的答案），给出结论和理由；它的结论取代 Jev 的读数。只有它能把等级抬到「高风险」（静态检查保底除外），也能把静态检查保底降下来（致命规则除外）。</p></div>
   </div>
 </section>
 
@@ -390,7 +390,7 @@ flowchart LR
     <tbody></tbody>
   </table></div>
   <p class="cap" id="rule-count"></p>
-  <p>严重度对等级的作用：<span class="sev sev-critical">严重</span> 直接高风险；<span class="sev sev-high">高</span> 至少可疑；<span class="sev sev-medium">中</span><span class="sev sev-low">低</span><span class="sev sev-info">信息</span> 只列出。</p>
+  <p>严重度对终审前等级的作用（终审可以降低，致命规则除外，第 4 节）：<span class="sev sev-critical">严重</span> 高风险；<span class="sev sev-high">高</span> 可疑；<span class="sev sev-medium">中</span><span class="sev sev-low">低</span><span class="sev sev-info">信息</span> 只列出。</p>
 
   <h3>需要 Jev 读数才会触发的 8 项检查</h3>
   <p>这些检查以前靠英文关键词判断，现在改成「结构条件 + Jev 读数（≥0.5）」。Jev 回答前、或 Jev 不可用时，它们<b>保持沉默</b>，不猜。</p>
@@ -510,7 +510,7 @@ flowchart LR
   <ul>
     <li>phi-agent 端 25 秒期限；扩展后台 28 秒超时。</li>
     <li>回答什么都没解释（例如只回一个词）→ 同一期限内再问 1 次；仍不行 → 终审失败。</li>
-    <li>终审失败 → 保留 Jev 的等级；面板写「Phi AI 未能完成进一步检查，这是快速检查的结果」；横幅照常出现（等级不是低风险时）。</li>
+    <li>终审失败 → 保留 Jev 的等级；面板写「Phi AI 未能完成进一步检查，这是快速检查的结果」；没有横幅，致命规则除外。</li>
     <li>配额或网关失败 → 「Phi AI 无法检查这封邮件，这只是静态检查的结果」，静态检查结果保留。</li>
   </ul>
 </section>
